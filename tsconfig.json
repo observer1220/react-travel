@@ -1,24 +1,39 @@
 {
   "compilerOptions": {
+    // 不需聲明變數類型any
+    "noImplicitAny": false,
+    // 編譯後的JavaScript版本
     "target": "es5",
     "lib": [
       "dom",
       "dom.iterable",
       "esnext"
     ],
+    // 允許混合編譯JavaScript文件
     "allowJs": true,
     "skipLibCheck": true,
+    // 允許我們使用commonJS的方式import默認文件，原本要寫import * as React from 'react'，變成import React from 'react'
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
+    // 配置代碼的模塊系統；常見的有NodeJS的CommonJS、ES6的esnext、RequireJS的AMD系統
     "module": "esnext",
+    // 決定編譯器的工作方式，曾經有"node" and "classic"兩個選項，目前只剩下前者
     "moduleResolution": "node",
     "resolveJsonModule": true,
+    // 編譯器將每個文件作為單獨的模塊來使用
     "isolatedModules": true,
+    // 當發生編譯錯誤時，編譯器不會生成JS代碼
     "noEmit": true,
-    "jsx": "react-jsx"
+    // 允許編譯器支持編譯react代碼，共有五種模式
+    "jsx": "react-jsx",
+    "plugins": [
+      {
+        "name": "typescript-plugin-css-modules"
+      }
+    ]
   },
   "include": [
     "src"

@@ -1,0 +1,5 @@
+{
+  // 配置 typescript 的輔助工具
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true
+}
