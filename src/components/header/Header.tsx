@@ -6,7 +6,7 @@ import { GlobalOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "../../redux/hooks";
 import { useDispatch } from "react-redux";
-import { Dispatch } from "redux";
+// import { Dispatch } from "redux";
 import {
   changeLanguageActionCreator,
   addLanguageActionCreator,
@@ -15,8 +15,8 @@ import { useTranslation } from "react-i18next";
 
 export const Header: React.FC = () => {
   const navigate = useNavigate();
-  const language = useSelector((state) => state.language);
-  const languageList = useSelector((state) => state.languageList);
+  const language = useSelector((state) => state.language.language);
+  const languageList = useSelector((state) => state.language.languageList);
   const dispatch = useDispatch();
   const { t } = useTranslation();
 
