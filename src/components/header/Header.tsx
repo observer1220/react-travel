@@ -72,6 +72,7 @@ export const Header: React.FC = () => {
         <Input.Search
           placeholder={"請輸入旅遊目的地、主題、或關鍵字"}
           className={styles["search-input"]}
+          onSearch={(keyword) => navigate("/search/" + keyword)}
         ></Input.Search>
       </Layout.Header>
       <Menu
