@@ -24,24 +24,21 @@ type MatchParams = {
 
 export const DetailPage: React.FC = () => {
   const { touristRouteId } = useParams<MatchParams>();
-  // 傳統MVC設計模式的作法
-  // const [loading, setLoading] = useState<boolean>(true);
-  // const [product, setProduct] = useState<any>(null);
-  // const [error, setError] = useState<string | null>(null);
-
+  // console.log(touristRouteId);
   // 使用useSelector連接產品詳情的數據(redux-toolkit的作法)，組件狀態從自己身上，轉移到redux當中了
-  const loading = useSelector((state) => state.productDetail.loading);
-  const error = useSelector((state) => state.productDetail.error);
-  const product = useSelector((state) => state.productDetail.data);
+  const loading = useSelector(state => state.productDetail.loading);
+  const error = useSelector(state => state.productDetail.error);
+  const product = useSelector(state => state.productDetail.data);
+  // useSelector(state => console.log(state))
 
-  const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch();  
 
   const jwt = useSelector(state => state.user.token) as string
   const shoppingCartLoading = useSelector(state => state.shoppingCart.loading)
 
   useEffect(() => {
     if (touristRouteId) {
-      dispatch(getProductDetail(touristRouteId));
+      dispatch(getProductDetail(touristRouteId))
     }
   }, []);
 

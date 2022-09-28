@@ -6,11 +6,9 @@ import {
   BusinessPartners,
 } from "../../components";
 import { Row, Col, Typography, Spin } from "antd";
-// import { productList1, productList2, productList3 } from "./mockups";
 import sideImage1 from "../../assets/images/sider_2019_12-09.png";
 import sideImage2 from "../../assets/images/sider_2019_02-04.png";
 import sideImage3 from "../../assets/images/sider_2019_02-04-2.png";
-import styles from "./HomePage.module.css";
 // withTranslation為高階組件，WithTranslation為類型定義
 import { withTranslation, WithTranslation } from "react-i18next";
 import { connect } from "react-redux";
@@ -38,6 +36,7 @@ type PropsType = WithTranslation &
   ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps>;
 
+// class組件
 class HomePageComponent extends React.Component<PropsType> {
   async componentDidMount() {
     this.props.giveMeData();
