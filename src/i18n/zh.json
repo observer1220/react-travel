@@ -20,7 +20,10 @@
         "enterprise": "企業遊",
         "high_end": "高端遊",
         "outdoor": "愛玩戶外",
-        "insurance": "保險"
+        "insurance": "保險",
+        "shoppingCart": "購物車",
+        "signOut": "登出",
+        "welcome": "歡迎回來"
     },
     "footer": {
         "detail": "版權所有 @ React 旅遊網"
