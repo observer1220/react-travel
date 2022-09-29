@@ -31,7 +31,7 @@ export const DetailPage: React.FC = () => {
   const product = useSelector(state => state.productDetail.data);
   // useSelector(state => console.log(state))
 
-  const dispatch = useAppDispatch();  
+  const dispatch = useAppDispatch()
 
   const jwt = useSelector(state => state.user.token) as string
   const shoppingCartLoading = useSelector(state => state.shoppingCart.loading)
@@ -46,8 +46,7 @@ export const DetailPage: React.FC = () => {
     return (
       <Spin
         size="large"
-        style={{
-          marginTop: 200,
+        style={{ marginTop: 200,
           marginBottom: 200,
           marginLeft: "auto",
           marginRight: "auto",

@@ -12,7 +12,7 @@ import {
 } from "../../redux/language/languageActions";
 import { useTranslation } from "react-i18next";
 import jwt_decode, { JwtPayload as DefaultJwtPayload } from "jwt-decode";
-import { userSlice } from '../../redux/user/slice'
+import { userSlice } from "../../redux/user/slice";
 
 // 繼承並新增username字段
 interface JwtPayload extends DefaultJwtPayload {
@@ -30,9 +30,11 @@ export const Header: React.FC = () => {
   const jwt = useSelector((state) => state.user.token);
   const [username, setUsername] = useState("");
 
-  // 
-  const shoppingCartItems = useSelector(state => state.shoppingCart.items)
-  const shoppingCartLoading = useSelector(state => state.shoppingCart.loading)
+  //
+  const shoppingCartItems = useSelector((state) => state.shoppingCart.items);
+  const shoppingCartLoading = useSelector(
+    (state) => state.shoppingCart.loading
+  );
 
   useEffect(() => {
     if (jwt) {
@@ -50,11 +52,10 @@ export const Header: React.FC = () => {
     }
   };
 
-
   const onLogout = () => {
-    dispatch(userSlice.actions.logOut())
-    navigate('/')
-  }
+    dispatch(userSlice.actions.logOut());
+    navigate("/");
+  };
   return (
     <div className={styles["app-header"]}>
       <div className={styles["top-header"]}>
@@ -76,14 +77,21 @@ export const Header: React.FC = () => {
           >
             {language === "zh" ? "中文" : "English"}
           </Dropdown.Button>
+          <Button
+            onClick={() => navigate("/todolist")}
+            style={{ marginLeft: 5 }}
+          >
+            待辦事項清單
+          </Button>
           {jwt ? (
             <Button.Group className={styles["button-group"]}>
               <span>{t("header.welcome")}</span>
               <Typography.Text>{username}</Typography.Text>
-              <Button 
+              <Button
                 loading={shoppingCartLoading}
-                onClick={()=> navigate('/shoppingCart')}>
-                  {t("header.shoppingCart")}( { shoppingCartItems.length } )
+                onClick={() => navigate("/shoppingCart")}
+              >
+                {t("header.shoppingCart")}( {shoppingCartItems.length} )
               </Button>
               <Button onClick={onLogout}>{t("header.signOut")}</Button>
             </Button.Group>
@@ -102,7 +110,7 @@ export const Header: React.FC = () => {
         </div>
       </div>
       <Layout.Header className={styles["main-header"]}>
-        <span onClick={() => navigate("/")}>
+        <span onClick={() => navigate("/")} style={{ cursor: "pointer" }}>
           <img src={logo} alt="" className={styles["App-logo"]} />
           <Typography.Title level={3} className={styles.title}>
             {t("header.title")}

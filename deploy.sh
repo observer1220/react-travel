@@ -1,4 +1,4 @@
-# 輸入指令一鍵佈署 .\deploy.sh
+# 輸入.\deploy.sh 或 sh deploy.sh 一鍵佈署 
 
 # 發生錯誤時執行終止指令
 set -e

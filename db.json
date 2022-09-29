@@ -1,0 +1,20 @@
+{
+  "posts": [
+    {
+      "todos": "買麵包",
+      "id": 1
+    },
+    {
+      "todos": "做家事",
+      "id": 2
+    },
+    {
+      "todos": "煮晚餐",
+      "id": 3
+    }
+  ],
+  "comments": [],
+  "profile": {
+    "name": "typicode"
+  }
+}
