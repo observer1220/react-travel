@@ -4,7 +4,7 @@
 set -e
 
 # 打包編譯
-npm run build
+# npm run build
 
 git add .
 git commit -m "update `date +'%Y-%m-%d %H:%M:%S'`";
