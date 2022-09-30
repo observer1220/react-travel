@@ -2,15 +2,10 @@ import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Spin, Row, Col, Divider, Typography, Anchor, Menu } from "antd";
 import styles from "./DetailPage.module.css";
-import {
-  ProductIntro,
-  ProductComments,
-} from "../../components";
+import { ProductIntro, ProductComments } from "../../components";
 import { DatePicker, Button } from "antd";
 import { commentMockData } from "./mockup";
-import {
-  getProductDetail,
-} from "../../redux/productDetail/slice";
+import { getProductDetail } from "../../redux/productDetail/slice";
 import { useSelector, useAppDispatch } from "../../redux/hooks";
 import { MainLayout } from "../../layouts/mainLayout";
 import { ShoppingCartOutlined } from "@ant-design/icons";
@@ -26,19 +21,21 @@ export const DetailPage: React.FC = () => {
   const { touristRouteId } = useParams<MatchParams>();
   // console.log(touristRouteId);
   // 使用useSelector連接產品詳情的數據(redux-toolkit的作法)，組件狀態從自己身上，轉移到redux當中了
-  const loading = useSelector(state => state.productDetail.loading);
-  const error = useSelector(state => state.productDetail.error);
-  const product = useSelector(state => state.productDetail.data);
+  const loading = useSelector((state) => state.productDetail.loading);
+  const error = useSelector((state) => state.productDetail.error);
+  const product = useSelector((state) => state.productDetail.data);
   // useSelector(state => console.log(state))
 
-  const dispatch = useAppDispatch()
+  const dispatch = useAppDispatch();
 
-  const jwt = useSelector(state => state.user.token) as string
-  const shoppingCartLoading = useSelector(state => state.shoppingCart.loading)
+  const jwt = useSelector((state) => state.user.token) as string;
+  const shoppingCartLoading = useSelector(
+    (state) => state.shoppingCart.loading
+  );
 
   useEffect(() => {
     if (touristRouteId) {
-      dispatch(getProductDetail(touristRouteId))
+      dispatch(getProductDetail(touristRouteId));
     }
   }, []);
 
@@ -46,7 +43,8 @@ export const DetailPage: React.FC = () => {
     return (
       <Spin
         size="large"
-        style={{ marginTop: 200,
+        style={{
+          marginTop: 200,
           marginBottom: 200,
           marginLeft: "auto",
           marginRight: "auto",
@@ -79,13 +77,15 @@ export const DetailPage: React.FC = () => {
             ></ProductIntro>
           </Col>
           <Col span={11}>
-            <Button 
-              style={{marginTop:50, marginBottom:30, display:'block'}}
+            <Button
+              style={{ marginTop: 50, marginBottom: 30, display: "block" }}
               type="primary"
               danger
               loading={shoppingCartLoading}
-              onClick={()=>{
-                dispatch(addShoppingCartItem({jwt, touristRouteId: product.id}))
+              onClick={() => {
+                dispatch(
+                  addShoppingCartItem({ jwt, touristRouteId: product.id })
+                );
               }}
             >
               <ShoppingCartOutlined />

@@ -30,7 +30,7 @@ export const Header: React.FC = () => {
   const jwt = useSelector((state) => state.user.token);
   const [username, setUsername] = useState("");
 
-  //
+  // 取得購物車資訊
   const shoppingCartItems = useSelector((state) => state.shoppingCart.items);
   const shoppingCartLoading = useSelector(
     (state) => state.shoppingCart.loading
@@ -38,6 +38,7 @@ export const Header: React.FC = () => {
 
   useEffect(() => {
     if (jwt) {
+      // jwt解碼，並將解碼後的username顯示在header
       const token = jwt_decode<JwtPayload>(jwt);
       setUsername(token.username);
     }
@@ -77,16 +78,18 @@ export const Header: React.FC = () => {
           >
             {language === "zh" ? "中文" : "English"}
           </Dropdown.Button>
-          <Button
-            onClick={() => navigate("/todolist")}
-            style={{ marginLeft: 5 }}
-          >
-            待辦事項清單
-          </Button>
+          {/* 以jwt判斷欲顯示的按鈕 */}
           {jwt ? (
             <Button.Group className={styles["button-group"]}>
-              <span>{t("header.welcome")}</span>
-              <Typography.Text>{username}</Typography.Text>
+              <Typography.Text>
+                {t("header.welcome")} {username}
+              </Typography.Text>
+              <Button
+                onClick={() => navigate("/todolist")}
+                style={{ marginLeft: 5 }}
+              >
+                待辦事項
+              </Button>
               <Button
                 loading={shoppingCartLoading}
                 onClick={() => navigate("/shoppingCart")}

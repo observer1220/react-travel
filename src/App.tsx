@@ -58,7 +58,14 @@ function App() {
               </PrivateRoute>
             }
           />
-          <Route path="/todolist" element={<TodolistPage />} />
+          <Route
+            path="/todolist"
+            element={
+              <PrivateRoute>
+                <TodolistPage />
+              </PrivateRoute>
+            }
+          />
           <Route path="*" element={<h1>404 NOT FOUND</h1>} />
         </Routes>
       </BrowserRouter>

@@ -1,33 +1,35 @@
-import styles from './SignInForm.module.css'
+import styles from "./SignInForm.module.css";
 import { Button, Checkbox, Form, Input } from "antd";
-import { signIn } from '../../redux/user/slice'
-import { useSelector, useAppDispatch } from '../../redux/hooks';
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { signIn } from "../../redux/user/slice";
+import { useSelector, useAppDispatch } from "../../redux/hooks";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export const SignInForm: React.FC = () => {
-    const loading = useSelector(state => state.user.loading)
-    const jwt = useSelector(state => state.user.token)
-    const error = useSelector(state => state.user.error)
-    const dispatch = useAppDispatch()
-    const navigate = useNavigate();
+  const loading = useSelector((state) => state.user.loading);
+  const jwt = useSelector((state) => state.user.token);
+  const error = useSelector((state) => state.user.error);
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
-    useEffect(()=>{
-        if(jwt !== null){
-            navigate('/')
-        }
-    }, [jwt])
-
-    const onFinish = async (values: any) => {
-        dispatch(signIn({
-            email: values.username,
-            password: values.password
-        }))
+  useEffect(() => {
+    if (jwt !== null) {
+      navigate("/");
     }
+  }, [jwt]);
 
-    const onFinishFailed = (errorInfo: any) => {
-        console.log("Failed:", errorInfo);
-    };
+  const onFinish = async (values: any) => {
+    dispatch(
+      signIn({
+        email: values.username,
+        password: values.password,
+      })
+    );
+  };
+
+  const onFinishFailed = (errorInfo: any) => {
+    console.log("Failed:", errorInfo);
+  };
 
   return (
     <Form
