@@ -1,33 +1,33 @@
-ul{
+ul {
     padding: 0px;
 }
 
-li{
+li {
     list-style: none;
 }
 
-.container{
+.container {
     border: 3px solid white;
     border-radius: 15px;
 }
 
-.leftSide{
+.leftSide {
     padding-top: 10px;
     writing-mode: vertical-lr;
     letter-spacing: 5px;
     border-right: 3px solid white;
 }
 
-.leftSide .main{
+.leftSide .main {
     font-size: 20px;
     font-weight: 900;
 }
 
-.leftSide .side{
+.leftSide .side {
     font-size: 12px;
 }
 
-.middlePart{
+.middlePart {
     padding: 10px;
 }
 
@@ -36,7 +36,7 @@ li{
     border-bottom: 3px solid white;
 }
 
-.middlePart .RowTwo{
+.middlePart .RowTwo {
     display: flex;
 }
 
@@ -45,30 +45,46 @@ li{
     margin-right: 10px;
 }
 
-.RowThree{
+.RowThree {
     padding: 0;
 }
 
-.RowThree li{
+.RowThree li {
     line-height: 2.5;
 }
 
-.RowThree .Yi{
+.RowThree .Yi {
     background-color: green;
     padding: 2px 4px;
     border-radius: 50%;
 }
 
-.RowThree .Ji{
+.RowThree .Ji {
     background-color: red;
     padding: 2px 4px;
     border-radius: 50%;
 }
 
-.rightSide{
+.rightSide {
     margin: auto;
 }
 
-.rightSide .Bagua-logo{
+.rightSide .Bagua-logo {
     width: 280px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .Bagua-logo {
+        animation: App-logo-spin infinite 20s linear;
+    }
+}
+
+@keyframes App-logo-spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
 }

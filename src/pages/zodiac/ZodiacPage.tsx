@@ -189,7 +189,7 @@ export const ZodiacPage: React.FC = (props) => {
           </Typography.Title>
         </Divider>
         <div>
-          傳統上生肖的劃分，是以二十四節氣中的立春作為交界點。以1989年為例，該年的立春為2月3日。因此2月2日出生者屬辰龍，2月3日出生者屬巳蛇。
+          ＊傳統上生肖的劃分是以二十四節氣的立春為界。以1989年為例，該年的立春為2月3日。因此2月2日出生者屬辰龍，2月3日出生者屬巳蛇。
         </div>
         <DatePicker
           defaultValue={moment()}
