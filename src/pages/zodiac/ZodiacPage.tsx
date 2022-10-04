@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { MainLayout } from "../../layouts/mainLayout";
-// import { Button as SAPButton } from "@ui5/webcomponents-react";
+import { ZodiacLayout } from "../../layouts/zodiacLayout";
 import { DatePicker, Button, Divider, Typography, Row, Col } from "antd";
 import moment from "moment";
 import locale from "antd/es/date-picker/locale/zh_TW";
@@ -17,20 +16,20 @@ interface FormType {
   CenturyValue: number;
 }
 
-// interface IFullLunar {
-//   FullLunar: any;
-//   LunarDate: any;
-//   GanZhi: any;
-//   WuXing: string;
-//   Chong: string;
-//   Sha: string;
-//   PengZu: string;
-//   XiSheng: string;
-//   FuSheng: string;
-//   CaiSheng: string;
-//   DayYi: string[];
-//   DayJi: string[];
-// }
+interface IFullLunar {
+  FullLunar: any;
+  LunarDate: any;
+  GanZhi: any;
+  WuXing: string;
+  Chong: string;
+  Sha: string;
+  PengZu: string;
+  XiSheng: string;
+  FuSheng: string;
+  CaiSheng: string;
+  DayYi: string[];
+  DayJi: string[];
+}
 
 export const ZodiacPage: React.FC = (props) => {
   const [formData, setFormData] = useState<FormType>({
@@ -42,7 +41,20 @@ export const ZodiacPage: React.FC = (props) => {
   });
   const [springDay, setSpringDay] = useState<any>();
   const [zodiac, setZodiac] = useState<any>();
-  const [FullLunar, setFullLunar] = useState<any>();
+  const [FullLunar, setFullLunar] = useState<IFullLunar>({
+    FullLunar: {},
+    LunarDate: new Date(),
+    GanZhi: "",
+    WuXing: "",
+    Chong: "",
+    Sha: "",
+    PengZu: "",
+    XiSheng: "",
+    FuSheng: "",
+    CaiSheng: "",
+    DayYi: [],
+    DayJi: [],
+  });
 
   // 每年的立春為生肖的判斷標準，計算立春日的公式為：[Y*D+C]-L
   // 公式解讀：Y：年數的後2位 D：常量0.2422 C：世紀值，21世紀是3.87 取整數減 L：閏年數。
@@ -66,6 +78,7 @@ export const ZodiacPage: React.FC = (props) => {
     // console.log(Sol.getDayYi());
 
     setFullLunar({
+      FullLunar: "",
       LunarDate: Sol.toString(),
       GanZhi:
         Sol.getYearInGanZhi() +
@@ -168,7 +181,7 @@ export const ZodiacPage: React.FC = (props) => {
   };
 
   return (
-    <MainLayout>
+    <ZodiacLayout>
       <Container>
         <Divider orientation="left">
           <Typography.Title level={3} style={{ color: "white" }}>
@@ -229,7 +242,7 @@ export const ZodiacPage: React.FC = (props) => {
                     })}
                   </li>
                   <li>
-                    <span className={styles["Ji"]}>忌</span>：{" "}
+                    <span className={styles["Ji"]}>忌</span>：
                     {FullLunar.DayJi.map((item) => {
                       return item + " ";
                     })}
@@ -245,6 +258,6 @@ export const ZodiacPage: React.FC = (props) => {
           <div></div>
         )}
       </Container>
-    </MainLayout>
+    </ZodiacLayout>
   );
 };
