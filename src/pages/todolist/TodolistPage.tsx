@@ -123,21 +123,21 @@ export const TodolistPage: React.FC = (props) => {
             </>
           }
         >
-          {dataSource.map((e) => (
-            <TableRow>
-              <TableCell key={e.id}>
+          {dataSource.map((e, idx) => (
+            <TableRow key={idx}>
+              <TableCell>
                 <Label>{e.id}</Label>
               </TableCell>
-              <TableCell key={e.todos}>
+              <TableCell>
                 <Label>{e.todos}</Label>
               </TableCell>
-              <TableCell key={e.remarks}>
+              <TableCell>
                 <Label>{e.remarks}</Label>
               </TableCell>
-              <TableCell key={e.username}>
+              <TableCell>
                 <Label>{e.username}</Label>
               </TableCell>
-              <TableCell key="operation">
+              <TableCell>
                 <div>
                   {/* 編輯功能 */}
                   <SAPButton
@@ -167,9 +167,8 @@ export const TodolistPage: React.FC = (props) => {
                         endContent={
                           <>
                             <SAPButton
-                              onClick={() => {
-                                // console.log("送出");
-                                dispatch(editTodolist(formData));
+                              onClick={async () => {
+                                await dispatch(editTodolist(formData));
                                 setDialogIsOpen(false);
                                 dispatch(getTodolist());
                               }}

@@ -43,13 +43,12 @@ export const addTodolist = createAsyncThunk(
 export const editTodolist = createAsyncThunk(
   "todolist/editTodolist",
   async (
-    formData: { todos: string; remarks: string; username: string; id: any },
+    formData: { todos: string; remarks: string; username: string; id: number },
     thunkAPI
   ) => {
     const { data } = await axios.put(
       `http://localhost:3002/posts/${formData.id}`,
       {
-        id: formData.id,
         todos: formData.todos,
         remarks: formData.remarks,
         username: formData.username,
@@ -63,7 +62,7 @@ export const editTodolist = createAsyncThunk(
 // 刪除待辦事項
 export const delTodolist = createAsyncThunk(
   "todolist/delTodolist",
-  async (id: any, thunkAPI) => {
+  async (id: number, thunkAPI) => {
     const { data } = await axios.delete(`http://localhost:3002/posts/${id}`);
     return data;
   }
