@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import { MainLayout } from "../../layouts/mainLayout";
 // import { Button as SAPButton } from "@ui5/webcomponents-react";
-import { DatePicker, Button, Divider, Typography } from "antd";
+import { DatePicker, Button, Divider, Typography, Row, Col } from "antd";
 import moment from "moment";
 import locale from "antd/es/date-picker/locale/zh_TW";
 import { Container } from "../../components/styles/main";
+import { Solar } from "lunar-typescript";
+import styles from "./Zodiac.module.css";
+import Bagua from "../../assets/Bagua.png";
 
 interface FormType {
   selectedDate: any;
@@ -13,6 +16,21 @@ interface FormType {
   birthDay: any;
   CenturyValue: number;
 }
+
+// interface IFullLunar {
+//   FullLunar: any;
+//   LunarDate: any;
+//   GanZhi: any;
+//   WuXing: string;
+//   Chong: string;
+//   Sha: string;
+//   PengZu: string;
+//   XiSheng: string;
+//   FuSheng: string;
+//   CaiSheng: string;
+//   DayYi: string[];
+//   DayJi: string[];
+// }
 
 export const ZodiacPage: React.FC = (props) => {
   const [formData, setFormData] = useState<FormType>({
@@ -24,6 +42,7 @@ export const ZodiacPage: React.FC = (props) => {
   });
   const [springDay, setSpringDay] = useState<any>();
   const [zodiac, setZodiac] = useState<any>();
+  const [FullLunar, setFullLunar] = useState<any>();
 
   // 每年的立春為生肖的判斷標準，計算立春日的公式為：[Y*D+C]-L
   // 公式解讀：Y：年數的後2位 D：常量0.2422 C：世紀值，21世紀是3.87 取整數減 L：閏年數。
@@ -35,6 +54,36 @@ export const ZodiacPage: React.FC = (props) => {
     formData.birthYear = date.getFullYear();
     formData.birthMonth = date.getMonth() + 1;
     formData.birthDay = date.getDate();
+
+    // 農曆轉換:代入出生年月日
+    const solar = Solar.fromYmd(
+      formData.birthYear,
+      formData.birthMonth,
+      formData.birthDay
+    );
+    // 農曆轉換:字串排列
+    const Sol = solar.getLunar();
+    // console.log(Sol.getDayYi());
+
+    setFullLunar({
+      LunarDate: Sol.toString(),
+      GanZhi:
+        Sol.getYearInGanZhi() +
+        "年 " +
+        Sol.getMonthInGanZhi() +
+        "月 " +
+        Sol.getDayInGanZhi() +
+        "日 ",
+      WuXing: Sol.getDayNaYin(),
+      Chong: Sol.getDayChongDesc(),
+      Sha: Sol.getDaySha(),
+      PengZu: Sol.getPengZuGan() + "，" + Sol.getPengZuZhi(),
+      XiSheng: Sol.getDayPositionXiDesc(),
+      FuSheng: Sol.getDayPositionFuDesc(),
+      CaiSheng: Sol.getDayPositionCaiDesc(),
+      DayYi: Sol.getDayYi(),
+      DayJi: Sol.getDayJi(),
+    });
 
     // 執行下列方法
     getCenturyValue();
@@ -143,15 +192,58 @@ export const ZodiacPage: React.FC = (props) => {
         >
           送出
         </Button>
-        <div style={{ marginLeft: "5px" }}>
-          <h3 style={{ color: "white" }}>
-            {formData.birthYear}年立春之際為：2月{springDay}日，
-            <span>
-              您的生肖為：
-              {zodiac}
-            </span>
-          </h3>
-        </div>
+        {springDay ? (
+          <div style={{ marginLeft: "5px" }}>
+            <h3 style={{ color: "white" }}>
+              {formData.birthYear}年立春之際為：2月{springDay}日，
+              <span>
+                您的生肖為：
+                {zodiac}
+              </span>
+            </h3>
+            <Row className={styles["container"]}>
+              <Col span={2} className={styles["leftSide"]}>
+                <ul>
+                  <li className={styles["main"]}>農曆{FullLunar.LunarDate}</li>
+                  <li className={styles["side"]}>{FullLunar.GanZhi}</li>
+                </ul>
+              </Col>
+              <Col span={12} className={styles["rightSide"]}>
+                <ul className={styles["RowOne"]}>
+                  <li>五行：{FullLunar.WuXing}</li>
+                  <li>
+                    沖煞：沖{FullLunar.Chong}，煞{FullLunar.Sha}
+                  </li>
+                  <li>彭祖：{FullLunar.PengZu}</li>
+                </ul>
+                <ul className={styles["RowTwo"]}>
+                  <li>喜神{FullLunar.XiSheng}</li>
+                  <li>福神{FullLunar.FuSheng}</li>
+                  <li>財神{FullLunar.CaiSheng}</li>
+                </ul>
+                <ul className={styles["RowThree"]}>
+                  <li>
+                    <span className={styles["Yi"]}>宜</span>：
+                    {FullLunar.DayYi.map((item) => {
+                      return item + " ";
+                    })}
+                  </li>
+                  <li>
+                    <span className={styles["Ji"]}>忌</span>：{" "}
+                    {FullLunar.DayJi.map((item) => {
+                      return item + " ";
+                    })}
+                  </li>
+                </ul>
+              </Col>
+              <Col style={{ margin: "auto" }}>
+                <img src={Bagua} alt="" className={styles["Bagua-logo"]} />
+              </Col>
+            </Row>
+          </div>
+        ) : (
+          <div></div>
+        )}
       </Container>
     </MainLayout>
   );

@@ -1,0 +1,71 @@
+ul{
+    padding: 0px;
+}
+
+li{
+    list-style: none;
+}
+
+.container{
+    border: 3px solid white;
+    border-radius: 15px;
+}
+
+.Bagua-logo{
+    height: 300px;
+    width: 300px;
+}
+
+.leftSide{
+    padding-top: 10px;
+    writing-mode: vertical-lr;
+    letter-spacing: 5px;
+    border-right: 3px solid white;
+}
+
+.leftSide .main{
+    font-size: 20px;
+    font-weight: 900;
+}
+
+.leftSide .side{
+    font-size: 12px;
+}
+
+.rightSide{
+    padding: 20px;
+}
+
+.rightSide .RowOne {
+    padding: 0 0 10px 0;
+    border-bottom: 3px solid white;
+}
+
+.rightSide .RowTwo{
+    display: flex;
+}
+
+.RowTwo li {
+    width: 40px;
+    margin-right: 10px;
+}
+
+.RowThree{
+    padding: 0;
+}
+
+.RowThree li{
+    line-height: 2.5;
+}
+
+.RowThree .Yi{
+    background-color: green;
+    padding: 2px 4px;
+    border-radius: 50%;
+}
+
+.RowThree .Ji{
+    background-color: red;
+    padding: 2px 4px;
+    border-radius: 50%;
+}
