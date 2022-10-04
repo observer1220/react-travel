@@ -194,7 +194,6 @@ export const ZodiacPage: React.FC = (props) => {
         <DatePicker
           defaultValue={moment()}
           locale={locale}
-          style={{ width: "30%" }}
           onChange={(e) => setFormData({ ...formData, selectedDate: e })}
           placeholder="請選擇您的出身年月日..."
         ></DatePicker>
@@ -215,13 +214,15 @@ export const ZodiacPage: React.FC = (props) => {
               </span>
             </h3>
             <Row className={styles["container"]}>
-              <Col span={2} className={styles["leftSide"]}>
+              <Col xs={6} md={3} lg={2} className={styles["leftSide"]}>
                 <ul>
-                  <li className={styles["main"]}>農曆{FullLunar.LunarDate}</li>
+                  <li className={styles["main"]}>
+                    農曆{FullLunar.LunarDate}日
+                  </li>
                   <li className={styles["side"]}>{FullLunar.GanZhi}</li>
                 </ul>
               </Col>
-              <Col span={12} className={styles["rightSide"]}>
+              <Col xs={18} md={12} lg={14} className={styles["middlePart"]}>
                 <ul className={styles["RowOne"]}>
                   <li>五行：{FullLunar.WuXing}</li>
                   <li>
@@ -249,7 +250,7 @@ export const ZodiacPage: React.FC = (props) => {
                   </li>
                 </ul>
               </Col>
-              <Col style={{ margin: "auto" }}>
+              <Col xs={0} md={8} lg={8} className={styles["rightSide"]}>
                 <img src={Bagua} alt="" className={styles["Bagua-logo"]} />
               </Col>
             </Row>

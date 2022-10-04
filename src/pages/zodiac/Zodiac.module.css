@@ -11,11 +11,6 @@ li{
     border-radius: 15px;
 }
 
-.Bagua-logo{
-    height: 300px;
-    width: 300px;
-}
-
 .leftSide{
     padding-top: 10px;
     writing-mode: vertical-lr;
@@ -32,16 +27,16 @@ li{
     font-size: 12px;
 }
 
-.rightSide{
+.middlePart{
     padding: 10px;
 }
 
-.rightSide .RowOne {
+.middlePart .RowOne {
     padding: 0 0 10px 0;
     border-bottom: 3px solid white;
 }
 
-.rightSide .RowTwo{
+.middlePart .RowTwo{
     display: flex;
 }
 
@@ -68,4 +63,12 @@ li{
     background-color: red;
     padding: 2px 4px;
     border-radius: 50%;
+}
+
+.rightSide{
+    margin: auto;
+}
+
+.rightSide .Bagua-logo{
+    width: 280px;
 }
