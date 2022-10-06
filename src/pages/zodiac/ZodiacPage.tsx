@@ -10,10 +10,9 @@ import Bagua from "../../assets/Bagua.png";
 
 interface FormType {
   selectedDate: any;
-  birthYear: any;
-  birthMonth: any;
-  birthDay: any;
-  CenturyValue: number;
+  birthYear: number;
+  birthMonth: number;
+  birthDay: number;
 }
 
 interface IFullLunar {
@@ -31,16 +30,14 @@ interface IFullLunar {
   DayJi: string[];
 }
 
-export const ZodiacPage: React.FC = (props) => {
+export const ZodiacPage: React.FC = () => {
   const [formData, setFormData] = useState<FormType>({
     selectedDate: moment(),
-    birthYear: 1989,
-    birthMonth: 3,
-    birthDay: 22,
-    CenturyValue: 3.87,
+    birthYear: 0,
+    birthMonth: 0,
+    birthDay: 0,
   });
   const [springDay, setSpringDay] = useState<any>();
-  const [zodiac, setZodiac] = useState<any>();
   const [FullLunar, setFullLunar] = useState<IFullLunar>({
     FullLunar: {},
     LunarDate: new Date(),
@@ -56,13 +53,12 @@ export const ZodiacPage: React.FC = (props) => {
     DayJi: [],
   });
 
-  // 每年的立春為生肖的判斷標準，計算立春日的公式為：[Y*D+C]-L
-  // 公式解讀：Y：年數的後2位 D：常量0.2422 C：世紀值，21世紀是3.87 取整數減 L：閏年數。
-  // 舉例說明：2058年立春日期的計算步驟[58 ×.0.2422 + 3.87]-[(58-1)/4]=17-14=3，則2月3日立春
-
   // 取得當前日期
   const getNowDate = () => {
+    // 取得使用者選擇的特定日期
     const date = formData.selectedDate._d;
+
+    // 將特定日期轉為純數字
     formData.birthYear = date.getFullYear();
     formData.birthMonth = date.getMonth() + 1;
     formData.birthDay = date.getDate();
@@ -73,10 +69,9 @@ export const ZodiacPage: React.FC = (props) => {
       formData.birthMonth,
       formData.birthDay
     );
-    // 農曆轉換:字串排列
-    const Sol = solar.getLunar();
-    // console.log(Sol.getDayYi());
 
+    // 更新農曆內容
+    const Sol = solar.getLunar();
     setFullLunar({
       FullLunar: "",
       LunarDate: Sol.toString(),
@@ -98,16 +93,14 @@ export const ZodiacPage: React.FC = (props) => {
       DayJi: Sol.getDayJi(),
     });
 
-    // 執行下列方法
-    getCenturyValue();
-    getSpringDay();
-    getZoadiac();
+    // 取得世紀值以後，將其當做立春日的參數
+    getSpringDay(getCenturyValue());
   };
 
   // 取得世紀值
   const getCenturyValue = () => {
     const _year = Math.floor(formData.birthYear / 100) + 1;
-    let Century;
+    let Century: number = 3.87;
 
     switch (_year) {
       case 20:
@@ -122,26 +115,40 @@ export const ZodiacPage: React.FC = (props) => {
       default:
         Century = 3.87;
     }
+    // 這裡可以用return，因為世紀值純粹就是一個參數，不會直接顯示在HTML模板裡
     return Century;
   };
 
-  // 計算該年度立春日: 2058年立春日期的計算步驟[58×.0.2422+3.87]-[(58-1)/4]=17-14=3，則2月3日立春
-  const getSpringDay = () => {
-    let Y = formData.birthYear % 100,
-      D = 0.2422,
-      C = formData.CenturyValue,
-      L = (Y - 1) / 4,
-      springDay = 0;
-    // console.log(Y, D, C, L);
-    springDay = Math.floor(Y * D + C) - Math.floor(L);
-    setSpringDay(springDay);
+  // 計算立春日
+  const getSpringDay = (CenturyValue: number) => {
+    // 立春日
+    let SpringDay: number = 0;
+    // 出生年的後兩位數
+    let DecimalBirthYear = formData.birthYear % 100;
+    // 平均回歸年小數點後四位
+    let DecimalTropicalYear = 0.2422;
+    // 世紀值常數
+    let CenturyConst = CenturyValue;
+    // 閏年數:
+    let LeapYear = (DecimalBirthYear - 1) / 4;
+    // 立春日
+
+    // console.log(DecimalBirthYear, DecimalTropicalYear, CenturyConst, LeapYear);
+
+    // 計算立春日的公式為[Y*D+C]-L
+    // 2058年立春日期的計算步驟[58×.0.2422+3.87]-[(58-1)/4]=17-14=3，則2月3日立春
+    SpringDay =
+      Math.floor(DecimalBirthYear * DecimalTropicalYear + CenturyConst) -
+      Math.floor(LeapYear);
+
+    // 這裡不建議直接將回傳值丟給getZoadiac()，因為立春日必須顯示在HTML裡，直接在HTML寫getSpringDay()很容易出錯
+    setSpringDay(SpringDay);
+    // 取得立春日之後，再取得生肖
+    getZoadiac();
   };
 
   // 取得生肖
   const getZoadiac = () => {
-    const year = formData.birthYear;
-    const month = formData.birthMonth;
-    const day = formData.birthDay;
     const zodiacData = [
       "子鼠",
       "丑牛",
@@ -156,10 +163,14 @@ export const ZodiacPage: React.FC = (props) => {
       "戌狗",
       "亥豬",
     ];
-    let myPos = (year - 1900) % 12;
-    let myZodiac = zodiacData[myPos];
+    // 計算生肖排序
+    let myPos = (formData.birthYear - 1900) % 12;
+    // 將生肖排序(數字)轉換為文字
+    let myZodiac: string = zodiacData[myPos];
 
-    switch (month) {
+    // 以出生月份做劃分
+    switch (formData.birthMonth) {
+      // 出生日期在立春之後者
       case 1:
         let _myPos = myPos - 1;
         if (_myPos < 0) {
@@ -167,8 +178,9 @@ export const ZodiacPage: React.FC = (props) => {
         }
         myZodiac = zodiacData[_myPos];
         break;
+      // 出生日期在立春之前者
       case 2:
-        if (day < springDay) {
+        if (formData.birthDay < springDay) {
           let _myPos = myPos - 1;
           if (_myPos < 0) {
             _myPos = 11;
@@ -177,7 +189,7 @@ export const ZodiacPage: React.FC = (props) => {
         }
         break;
     }
-    setZodiac(myZodiac);
+    return myZodiac;
   };
 
   return (
@@ -210,7 +222,7 @@ export const ZodiacPage: React.FC = (props) => {
               {formData.birthYear}年立春之際為：2月{springDay}日，
               <span>
                 您的生肖為：
-                {zodiac}
+                {getZoadiac()}
               </span>
             </h3>
             <Row className={styles["container"]}>
