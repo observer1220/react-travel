@@ -31,13 +31,15 @@ interface IFullLunar {
 }
 
 export const ZodiacPage: React.FC = () => {
+  // 定義使用者選擇的日期與更新方法
   const [formData, setFormData] = useState<FormType>({
     selectedDate: moment(),
     birthYear: 0,
     birthMonth: 0,
     birthDay: 0,
   });
-  const [springDay, setSpringDay] = useState<any>();
+
+  // 定義農民曆有哪些欄位與內容的更新方法
   const [FullLunar, setFullLunar] = useState<IFullLunar>({
     FullLunar: {},
     LunarDate: new Date(),
@@ -53,9 +55,11 @@ export const ZodiacPage: React.FC = () => {
     DayJi: [],
   });
 
-  // 取得當前日期
+  // 定義立春日與更新方法
+  const [springDay, setSpringDay] = useState<number>(0);
+
+  // 取得使用者選擇的特定日期
   const getNowDate = () => {
-    // 取得使用者選擇的特定日期
     const date = formData.selectedDate._d;
 
     // 將特定日期轉為純數字
@@ -131,8 +135,6 @@ export const ZodiacPage: React.FC = () => {
     let CenturyConst = CenturyValue;
     // 閏年數:
     let LeapYear = (DecimalBirthYear - 1) / 4;
-    // 立春日
-
     // console.log(DecimalBirthYear, DecimalTropicalYear, CenturyConst, LeapYear);
 
     // 計算立春日的公式為[Y*D+C]-L
@@ -170,7 +172,7 @@ export const ZodiacPage: React.FC = () => {
 
     // 以出生月份做劃分
     switch (formData.birthMonth) {
-      // 出生日期在立春之後者
+      // 出生日期在立春之後
       case 1:
         let _myPos = myPos - 1;
         if (_myPos < 0) {
@@ -178,7 +180,7 @@ export const ZodiacPage: React.FC = () => {
         }
         myZodiac = zodiacData[_myPos];
         break;
-      // 出生日期在立春之前者
+      // 出生日期在立春之前
       case 2:
         if (formData.birthDay < springDay) {
           let _myPos = myPos - 1;
@@ -250,14 +252,14 @@ export const ZodiacPage: React.FC = () => {
                 <ul className={styles["RowThree"]}>
                   <li>
                     <span className={styles["Yi"]}>宜</span>：
-                    {FullLunar.DayYi.map((item) => {
-                      return item + " ";
+                    {FullLunar.DayYi.map((item, index) => {
+                      return (index ? "、" : "") + item;
                     })}
                   </li>
                   <li>
                     <span className={styles["Ji"]}>忌</span>：
-                    {FullLunar.DayJi.map((item) => {
-                      return item + " ";
+                    {FullLunar.DayJi.map((item, index) => {
+                      return (index ? "、" : "") + item;
                     })}
                   </li>
                 </ul>
