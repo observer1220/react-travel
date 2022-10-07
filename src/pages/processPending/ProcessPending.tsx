@@ -128,19 +128,20 @@ export const ProcessPendingPage: React.FC = () => {
           {errors.StandardTextCode && <p>需介於18 ~ 99歲之間</p>}
         </FormItem>
         <FormItem label="製程代號">
-          <Input {...register("StandardTextCode", { min: 18, max: 99 })} />
+          <Input {...register("ProcessCode", { min: 18, max: 99 })} />
           {errors.StandardTextCode && <p>需介於18 ~ 99歲之間</p>}
         </FormItem>
         <FormItem label="廠商代號">
-          <Input {...register("StandardTextCode", { min: 18, max: 99 })} />
+          <Input {...register("ManufacturerCode", { min: 18, max: 99 })} />
           {errors.StandardTextCode && <p>需介於18 ~ 99歲之間</p>}
         </FormItem>
         <FormItem label="品名">
-          <Input {...register("StandardTextCode", { min: 18, max: 99 })} />
+          <Input {...register("ProductName", { min: 18, max: 99 })} />
           {errors.StandardTextCode && <p>需介於18 ~ 99歲之間</p>}
         </FormItem>
         <FormItem label="預計完成日">
           <DatePicker
+            {...register("ESTEndDate", { min: 18, max: 99 })}
             onChange={function noRefCheck() {}}
             onInput={function noRefCheck() {}}
             primaryCalendarType="Gregorian"
@@ -148,6 +149,7 @@ export const ProcessPendingPage: React.FC = () => {
         </FormItem>
         <FormItem label="預計開工日">
           <DatePicker
+            {...register("ESTStartDate", { min: 18, max: 99 })}
             onChange={function noRefCheck() {}}
             onInput={function noRefCheck() {}}
             primaryCalendarType="Gregorian"
@@ -155,6 +157,7 @@ export const ProcessPendingPage: React.FC = () => {
         </FormItem>
         <FormItem label="預交日期">
           <DatePicker
+            {...register("ESTDeliveryDate", { min: 18, max: 99 })}
             onChange={function noRefCheck() {}}
             onInput={function noRefCheck() {}}
             primaryCalendarType="Gregorian"
