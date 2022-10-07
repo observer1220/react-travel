@@ -213,10 +213,31 @@ export const ZodiacPage: React.FC = () => {
         ></DatePicker>
         <Button
           onClick={() => {
+            // // 改變速率
+            // // var(--logo-speedTiming)
+            // const timing = getComputedStyle(document.documentElement)
+            //   .getPropertyValue("--logo-speedTiming")
+            //   .replace("s", "");
+            // // console.log(timing);
+            // let newTiming: any = timing;
+
+            // /*Reset point*/
+            // if (newTiming < 0.5) {
+            //   newTiming = 20;
+            // } else {
+            //   newTiming = newTiming / 20;
+            // }
+
+            // document.documentElement.style.setProperty(
+            //   "--logo-speedTiming",
+            //   `${newTiming}s`
+            // );
+
+            // 觸發取得日期
             getNowDate();
           }}
         >
-          送出
+          推算
         </Button>
         {springDay ? (
           <div style={{ marginLeft: "5px" }}>

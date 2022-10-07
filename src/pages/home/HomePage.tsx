@@ -15,6 +15,7 @@ import { connect } from "react-redux";
 import { RootState } from "../../redux/store";
 import { giveMeDataActionCreator } from "../../redux/recommendProducts/recommendProductsActions";
 import { MainLayout } from "../../layouts/mainLayout";
+import styles from "./HomePage.module.css";
 
 const mapStateToProps = (state: RootState) => {
   return {
@@ -53,8 +54,6 @@ class HomePageComponent extends React.Component<PropsType> {
           style={{
             marginTop: 200,
             marginBottom: 200,
-            marginLeft: "auto",
-            marginRight: "auto",
             width: "100%",
           }}
         ></Spin>
@@ -67,7 +66,8 @@ class HomePageComponent extends React.Component<PropsType> {
 
     return (
       <MainLayout>
-        <Row style={{ marginTop: 20 }}>
+        {/* 輪播圖 */}
+        <Row className={styles["container"]}>
           <Col span={6}>
             <SideMenu />
           </Col>
@@ -75,6 +75,7 @@ class HomePageComponent extends React.Component<PropsType> {
             <Carousel />
           </Col>
         </Row>
+        {/*  */}
         <ProductCollection
           title={
             <Typography.Title level={3} type="warning">

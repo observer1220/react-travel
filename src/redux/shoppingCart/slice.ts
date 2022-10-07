@@ -5,12 +5,14 @@ interface ShoppingCartState {
   loading: boolean;
   error: string | null;
   items: any[];
+  drawer: boolean;
 }
 
 const initialState: ShoppingCartState = {
   loading: true,
   error: null,
   items: [],
+  drawer: false,
 };
 
 // 取得購物車列表
@@ -50,20 +52,20 @@ export const addShoppingCartItem = createAsyncThunk(
 
 // 結帳功能
 export const checkout = createAsyncThunk(
-    "shoppingCart/checkout",
-    async (jwt: string, thunkAPI) => {
-      const { data } = await axios.post(
-        `http://123.56.149.216:8089/api/shoppingCart/checkout`,
-        null,
-        {
-          headers: {
-            Authorization: `bearer ${jwt}`,
-          },
-        }
-      );
-      return data;
-    }
-  );
+  "shoppingCart/checkout",
+  async (jwt: string, thunkAPI) => {
+    const { data } = await axios.post(
+      `http://123.56.149.216:8089/api/shoppingCart/checkout`,
+      null,
+      {
+        headers: {
+          Authorization: `bearer ${jwt}`,
+        },
+      }
+    );
+    return data;
+  }
+);
 
 // 清空購物車
 export const clearShoppingCartItem = createAsyncThunk(
@@ -80,6 +82,15 @@ export const clearShoppingCartItem = createAsyncThunk(
         },
       }
     );
+  }
+);
+
+export const changeDrawerState = createAsyncThunk(
+  "shoppingCart/changeDrawerState",
+  async (drawerState: boolean, thunkAPI) => {
+    return drawerState;
+    // console.log(drawerState);
+    // console.log(ShoppingCartState.drawer);
   }
 );
 
@@ -122,19 +133,16 @@ export const shoppingCartSlice = createSlice({
     },
     // 結帳功能
     [checkout.pending.type]: (state) => {
-        state.loading = true;
-      },
-    [checkout.fulfilled.type]: (state, action) => {
-    state.items = [];
-    state.loading = false;
-    state.error = null;
+      state.loading = true;
     },
-    [checkout.rejected.type]: (
-    state,
-    action: PayloadAction<string | null>
-    ) => {
-    state.loading = false;
-    state.error = action.payload;
+    [checkout.fulfilled.type]: (state, action) => {
+      state.items = [];
+      state.loading = false;
+      state.error = null;
+    },
+    [checkout.rejected.type]: (state, action: PayloadAction<string | null>) => {
+      state.loading = false;
+      state.error = action.payload;
     },
     // 清空購物車
     [clearShoppingCartItem.pending.type]: (state) => {
@@ -151,6 +159,19 @@ export const shoppingCartSlice = createSlice({
     ) => {
       state.loading = false;
       state.error = action.payload;
+    },
+    // 變更購物車側邊欄的開關值
+    [changeDrawerState.pending.type]: (state) => {
+      state.drawer = false;
+    },
+    [changeDrawerState.fulfilled.type]: (state, action) => {
+      state.drawer = action.payload;
+    },
+    [changeDrawerState.rejected.type]: (
+      state,
+      action: PayloadAction<string | null>
+    ) => {
+      state.drawer = false;
     },
   },
 });

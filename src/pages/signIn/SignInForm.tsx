@@ -13,7 +13,8 @@ export const SignInForm: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (jwt !== null) {
+    // 監控jwt，該值不為null及undefined時，自動跳轉至首頁
+    if (jwt !== null && jwt !== undefined) {
       navigate("/");
     }
   }, [jwt]);
@@ -68,7 +69,7 @@ export const SignInForm: React.FC = () => {
 
       <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
         <Button type="primary" htmlType="submit" loading={loading}>
-          Submit
+          登入
         </Button>
       </Form.Item>
     </Form>

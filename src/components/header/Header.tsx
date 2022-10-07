@@ -4,8 +4,7 @@ import logo from "../../assets/logo.svg";
 import { Layout, Typography, Input, Menu, Button, Dropdown } from "antd";
 import { GlobalOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "../../redux/hooks";
-import { useDispatch } from "react-redux";
+import { useSelector, useAppDispatch } from "../../redux/hooks";
 import {
   changeLanguageActionCreator,
   addLanguageActionCreator,
@@ -13,6 +12,7 @@ import {
 import { useTranslation } from "react-i18next";
 import jwt_decode, { JwtPayload as DefaultJwtPayload } from "jwt-decode";
 import { userSlice } from "../../redux/user/slice";
+import { changeDrawerState } from "../../redux/shoppingCart/slice";
 
 // 繼承並新增username字段
 interface JwtPayload extends DefaultJwtPayload {
@@ -23,7 +23,7 @@ export const Header: React.FC = () => {
   const navigate = useNavigate();
   const language = useSelector((state) => state.language.language);
   const languageList = useSelector((state) => state.language.languageList);
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const { t } = useTranslation();
 
   // JWT解碼
@@ -36,13 +36,16 @@ export const Header: React.FC = () => {
     (state) => state.shoppingCart.loading
   );
 
-  useEffect(() => {
-    if (jwt) {
-      // jwt解碼，並將解碼後的username顯示在header
-      const token = jwt_decode<JwtPayload>(jwt);
-      setUsername(token.username);
+  // 側邊欄購物車開關
+  const drawerState = useSelector((state) => state.shoppingCart.drawer);
+  const showDrawer = () => {
+    // console.log(drawerState);
+    if (drawerState === true) {
+      dispatch(changeDrawerState(false));
+    } else {
+      dispatch(changeDrawerState(true));
     }
-  }, [jwt]);
+  };
 
   const menuClickHandler = (e) => {
     // console.log(e);
@@ -57,39 +60,50 @@ export const Header: React.FC = () => {
     dispatch(userSlice.actions.logOut());
     navigate("/");
   };
+
+  useEffect(() => {
+    if (jwt) {
+      // jwt解碼，並將解碼後的username顯示在header
+      const token = jwt_decode<JwtPayload>(jwt);
+      setUsername(token.username);
+    }
+  }, [jwt]);
+
   return (
     <div className={styles["app-header"]}>
       <div className={styles["top-header"]}>
         <div className={styles.inner}>
-          <Typography.Text> {t("header.slogan")}</Typography.Text>
-          <Dropdown.Button
-            style={{ marginLeft: 15 }}
-            overlay={
-              <Menu onClick={menuClickHandler}>
-                {languageList.map((item) => {
-                  return <Menu.Item key={item.code}>{item.name}</Menu.Item>;
-                })}
-                <Menu.Item key={"new"}>
-                  {t("header.add_new_language")}
-                </Menu.Item>
-              </Menu>
-            }
-            icon={<GlobalOutlined />}
-          >
-            {language === "zh" ? "中文" : "English"}
-          </Dropdown.Button>
+          <div>
+            <Typography.Text> {t("header.slogan")}</Typography.Text>
+            <Dropdown.Button
+              style={{ marginLeft: 15 }}
+              overlay={
+                <Menu onClick={menuClickHandler}>
+                  {languageList.map((item) => {
+                    return <Menu.Item key={item.code}>{item.name}</Menu.Item>;
+                  })}
+                  <Menu.Item key={"new"}>
+                    {t("header.add_new_language")}
+                  </Menu.Item>
+                </Menu>
+              }
+              icon={<GlobalOutlined />}
+            >
+              {language === "zh" ? "中文" : "English"}
+            </Dropdown.Button>
+          </div>
           {/* 以jwt判斷欲顯示的按鈕 */}
           {jwt ? (
             <Button.Group className={styles["button-group"]}>
               <Typography.Text>
                 {t("header.welcome")} {username}
               </Typography.Text>
-              <Button
-                onClick={() => navigate("/todolist")}
-                style={{ marginLeft: 5 }}
-              >
-                待辦事項
+              {/* 第二版側邊購物車 */}
+              <Button onClick={showDrawer} style={{ marginLeft: 5 }}>
+                購物抽屜
               </Button>
+              <Button onClick={() => navigate("/todolist")}>待辦事項</Button>
+              {/* 第一版跳頁購物車 */}
               <Button
                 loading={shoppingCartLoading}
                 onClick={() => navigate("/shoppingCart")}

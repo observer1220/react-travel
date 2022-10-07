@@ -1,6 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./App.module.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import {
   HomePage,
   SignInPage,
@@ -10,13 +10,22 @@ import {
   ShoppingCartPage,
   PlaceOrderPage,
   TodolistPage,
+  ProcessPendingPage,
   ZodiacPage,
 } from "./pages";
 import { Navigate } from "react-router-dom";
 import { useSelector, useAppDispatch } from "./redux/hooks";
-import { getShoppingCart } from "./redux/shoppingCart/slice";
+import {
+  checkout,
+  clearShoppingCartItem,
+  getShoppingCart,
+} from "./redux/shoppingCart/slice";
 // 以下是Styled-components的引用
 import { ThemeProvider } from "styled-components";
+import { BackTop, Drawer, Button, Affix } from "antd";
+import { changeDrawerState } from "./redux/shoppingCart/slice";
+import { ProductList } from "./components/productList/index";
+import { PaymentCard } from "./components";
 
 // 僅授權用戶可造訪
 const PrivateRoute = ({ children }) => {
@@ -34,14 +43,24 @@ const theme = {
 };
 
 function App() {
-  const jwt = useSelector((state) => state.user.token);
+  const loading = useSelector((state) => state.shoppingCart.loading);
+  const jwt = useSelector((state) => state.user.token) as string;
+  const drawerState = useSelector((state) => state.shoppingCart.drawer);
+  const shoppingCartItems = useSelector((state) => state.shoppingCart.items);
+  // console.log(shoppingCartItems);
+
   const dispatch = useAppDispatch();
+  // const navigate = useNavigate();
+
+  const onClose = () => {
+    dispatch(changeDrawerState(false));
+  };
 
   useEffect(() => {
     if (jwt) {
       dispatch(getShoppingCart(jwt));
     }
-  }, [jwt]);
+  }, [dispatch, jwt]);
 
   return (
     <ThemeProvider theme={theme}>
@@ -86,10 +105,62 @@ function App() {
                 </PrivateRoute>
               }
             />
-
+            <Route
+              path="/process_pending"
+              element={
+                <PrivateRoute>
+                  <ProcessPendingPage />
+                </PrivateRoute>
+              }
+            />
             <Route path="*" element={<h1>404 NOT FOUND</h1>} />
           </Routes>
         </BrowserRouter>
+        <BackTop />
+        <Drawer
+          title="購物車清單"
+          placement="left"
+          onClose={onClose}
+          closable={false}
+          visible={drawerState}
+          width={"35%"}
+        >
+          <ProductList
+            data={shoppingCartItems.map((state) => state.touristRoute)}
+          />
+          <Affix>
+            <div className={styles["payment-card-container"]}>
+              <PaymentCard
+                loading={loading}
+                originalPrice={shoppingCartItems
+                  .map((state) => state.originalPrice)
+                  .reduce((a, b) => a + b, 0)}
+                price={shoppingCartItems
+                  .map(
+                    (state) =>
+                      state.originalPrice *
+                      (state.discountPresent ? state.discountPresent : 1)
+                  )
+                  .reduce((a, b) => a + b, 0)}
+                onCheckout={() => {
+                  if (shoppingCartItems.length <= 0) {
+                    return;
+                  }
+                  dispatch(checkout(jwt));
+                  // navigate("/placeOrder");
+                }}
+                onShoppingCartClear={() => {
+                  dispatch(
+                    clearShoppingCartItem({
+                      jwt,
+                      itemIds: shoppingCartItems.map((s) => s.id),
+                    })
+                  );
+                }}
+              />
+            </div>
+          </Affix>
+        </Drawer>
       </div>
     </ThemeProvider>
   );

@@ -37,21 +37,6 @@ const variable = (state = defaultState, action: LanguageActionTypes) => {
     default:
       return state;
   }
-
-  // console.log(state, action);
-  // if (action.type === "change_language") {
-  //   const newState = { ...state, language: action.payload };
-  //   return newState;
-  // }
-
-  // if (action.type === "add_language") {
-  //   const newState = {
-  //     ...state,
-  //     languageList: [...state.languageList, action.payload],
-  //   };
-  //   return newState;
-  // }
-  // return state;
 };
 
 export default variable;

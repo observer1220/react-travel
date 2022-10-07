@@ -10,7 +10,8 @@ import rootStore from "./redux/store";
 import { PersistGate } from "redux-persist/integration/react";
 import { ThemeProvider } from "@ui5/webcomponents-react";
 import "@ui5/webcomponents-icons/dist/AllIcons.js";
-
+import "@ui5/webcomponents/dist/features/InputElementsFormSupport.js";
+import "@ui5/webcomponents/dist/Assets";
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
