@@ -2,7 +2,6 @@ import { useForm } from "react-hook-form";
 import "./ProcessPending.module.css";
 import {
   Form,
-  FormGroup,
   Input,
   Label,
   Button,
@@ -25,11 +24,17 @@ import {
   getTodolist,
 } from "../../redux/todolist/slice";
 import jwt_decode, { JwtPayload as DefaultJwtPayload } from "jwt-decode";
+
 interface IFormInput {
-  firstName: string;
-  lastName: string;
-  age: number;
-  example: string;
+  orderType: string;
+  orderNo: string;
+  StandardTextCode: number;
+  ProcessCode: string;
+  ManufacturerCode: string;
+  ProductName: string;
+  ESTEndDate: any;
+  ESTStartDate: any;
+  ESTDeliveryDate: any;
 }
 
 interface FormType {
@@ -82,24 +87,7 @@ export const ProcessPendingPage: React.FC = () => {
 
   const onSubmit = (data: IFormInput) => {
     alert(JSON.stringify(data));
-  }; // your form submit function which will invoke after successful validation
-
-  // const createRows = (indexOffset) => {
-  //   return new Array(10).fill("").map((_, index) => (
-  //     <TableRow key={`${index + indexOffset} - row`}>
-  //       <TableCell>
-  //         <Label>{index + indexOffset}</Label>
-  //       </TableCell>
-  //       <TableCell>
-  //         <Label>Placeholder</Label>
-  //       </TableCell>
-  //     </TableRow>
-  //   ));
-  // };
-  // const [rows, setRows] = useState(createRows(1));
-  // const onLoadMore = () => {
-  //   setRows((prev) => [...prev, ...createRows(prev.length + 1)]);
-  // };
+  };
   return (
     <>
       {/* 頂部欄位 */}
@@ -119,37 +107,37 @@ export const ProcessPendingPage: React.FC = () => {
       <Form columnsXL={3} style={{ background: "#f8fcfc" }}>
         <FormItem label="工單單號">
           <Input
-            {...register("firstName", {
+            {...register("orderType", {
               required: true,
               maxLength: 20,
               pattern: /^[A-Za-z]+$/i,
             })}
           />
-          {errors?.firstName?.type === "required" && <p>此欄位為必填</p>}
-          {errors?.firstName?.type === "maxLength" && (
+          {errors?.orderType?.type === "required" && <p>此欄位為必填</p>}
+          {errors?.orderType?.type === "maxLength" && (
             <p>姓氏不能超過20個字元</p>
           )}
-          {errors?.firstName?.type === "pattern" && <p>僅能輸入英文字母</p>}
+          {errors?.orderType?.type === "pattern" && <p>僅能輸入英文字母</p>}
         </FormItem>
         <FormItem label="工單單號">
-          <Input {...register("lastName", { pattern: /^[A-Za-z]+$/i })} />
-          {errors?.lastName?.type === "pattern" && <p>僅能輸入英文字母</p>}
+          <Input {...register("orderNo", { pattern: /^[A-Za-z]+$/i })} />
+          {errors?.orderNo?.type === "pattern" && <p>僅能輸入英文字母</p>}
         </FormItem>
         <FormItem label="標準內文碼">
-          <Input {...register("age", { min: 18, max: 99 })} />
-          {errors.age && <p>需介於18 ~ 99歲之間</p>}
+          <Input {...register("StandardTextCode", { min: 18, max: 99 })} />
+          {errors.StandardTextCode && <p>需介於18 ~ 99歲之間</p>}
         </FormItem>
         <FormItem label="製程代號">
-          <Input {...register("age", { min: 18, max: 99 })} />
-          {errors.age && <p>需介於18 ~ 99歲之間</p>}
+          <Input {...register("StandardTextCode", { min: 18, max: 99 })} />
+          {errors.StandardTextCode && <p>需介於18 ~ 99歲之間</p>}
         </FormItem>
         <FormItem label="廠商代號">
-          <Input {...register("age", { min: 18, max: 99 })} />
-          {errors.age && <p>需介於18 ~ 99歲之間</p>}
+          <Input {...register("StandardTextCode", { min: 18, max: 99 })} />
+          {errors.StandardTextCode && <p>需介於18 ~ 99歲之間</p>}
         </FormItem>
         <FormItem label="品名">
-          <Input {...register("age", { min: 18, max: 99 })} />
-          {errors.age && <p>需介於18 ~ 99歲之間</p>}
+          <Input {...register("StandardTextCode", { min: 18, max: 99 })} />
+          {errors.StandardTextCode && <p>需介於18 ~ 99歲之間</p>}
         </FormItem>
         <FormItem label="預計完成日">
           <DatePicker
