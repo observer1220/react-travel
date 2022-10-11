@@ -89,8 +89,6 @@ export const changeDrawerState = createAsyncThunk(
   "shoppingCart/changeDrawerState",
   async (drawerState: boolean, thunkAPI) => {
     return drawerState;
-    // console.log(drawerState);
-    // console.log(ShoppingCartState.drawer);
   }
 );
 

@@ -22,6 +22,7 @@ import {
 } from "../../redux/todolist/slice";
 import jwt_decode, { JwtPayload as DefaultJwtPayload } from "jwt-decode";
 import { Container } from "../../components/styles/main";
+import { ProcessPendingDialog } from "../../components/diglog";
 
 // 繼承並新增username字段
 interface JwtPayload extends DefaultJwtPayload {
@@ -155,7 +156,11 @@ export const TodolistPage: React.FC = (props) => {
                       });
                     }}
                   ></SAPButton>
-                  <Dialog
+                  <ProcessPendingDialog
+                    dialogIsOpen={dialogIsOpen}
+                    setDialogIsOpen={setDialogIsOpen}
+                  ></ProcessPendingDialog>
+                  {/* <Dialog
                     open={dialogIsOpen}
                     header={
                       <Bar>
@@ -203,7 +208,7 @@ export const TodolistPage: React.FC = (props) => {
                       }
                       placeholder="請輸入備註..."
                     ></SAPInput>
-                  </Dialog>
+                  </Dialog> */}
                   {/* 刪除功能 */}
                   <SAPButton
                     design="Negative"
