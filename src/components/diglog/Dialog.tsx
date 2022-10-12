@@ -1,17 +1,10 @@
-import { useState } from "react";
-import { useAppDispatch, useSelector } from "../../redux/hooks";
+import { useAppDispatch } from "../../redux/hooks";
+import { Input, Button, Dialog, Bar, Title } from "@ui5/webcomponents-react";
 import {
-  Input,
-  Button as SAPButton,
-  Dialog,
-  Bar,
-  Title,
-  Button,
-} from "@ui5/webcomponents-react";
-import {
-  editProcessPendingList,
-  getProcessPendingList,
-} from "../../redux/processPending/slice";
+  addTodolist,
+  editTodolist,
+  getTodolist,
+} from "../../redux/todolist/slice";
 
 interface FormType {
   id: any;
@@ -21,51 +14,61 @@ interface FormType {
 }
 
 interface PropsType {
-  dialogIsOpen: boolean;
-  setDialogIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  title: string;
+  option: string;
+  isOpen: boolean;
+  onChangeStatus: React.Dispatch<React.SetStateAction<boolean>>;
+  formData: any;
+  setFormData: React.Dispatch<React.SetStateAction<FormType>>;
 }
 
 export const ProcessPendingDialog: React.FC<PropsType> = ({
-  dialogIsOpen,
-  setDialogIsOpen,
+  title,
+  option,
+  isOpen,
+  onChangeStatus,
+  formData,
+  setFormData,
 }) => {
   const dispatch = useAppDispatch();
-  console.log(dialogIsOpen);
-
-  const [formData, setFormData] = useState<FormType>({
-    id: null,
-    todos: "",
-    remarks: "",
-    username: "",
-  });
-
   return (
     <Dialog
-      open={dialogIsOpen}
+      open={isOpen}
       header={
         <Bar>
-          <Title>編輯待辦事項</Title>
+          <Title>{title}</Title>
         </Bar>
       }
       footer={
         <Bar
           endContent={
             <>
-              <SAPButton
+              <Button
                 onClick={async () => {
-                  await dispatch(editProcessPendingList(formData));
-                  dispatch(getProcessPendingList());
+                  if (option === "add") {
+                    await dispatch(addTodolist(formData));
+                    setFormData({
+                      id: null,
+                      todos: "",
+                      remarks: "",
+                      username: formData.username,
+                    });
+                  } else if (option === "edit") {
+                    await dispatch(editTodolist(formData));
+                  }
+                  onChangeStatus(false);
+                  dispatch(getTodolist());
                 }}
               >
                 確認
-              </SAPButton>
-              <SAPButton
+              </Button>
+              <Button
                 onClick={() => {
-                  setDialogIsOpen(false);
+                  onChangeStatus(false);
                 }}
               >
                 取消
-              </SAPButton>
+              </Button>
             </>
           }
         />

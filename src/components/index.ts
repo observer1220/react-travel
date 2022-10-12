@@ -12,3 +12,4 @@ export * from "./paymentCard";
 export * from "./paymentForm";
 export * from "./checkOutCard";
 export * from "./diglog";
+export * from "./Pagination";

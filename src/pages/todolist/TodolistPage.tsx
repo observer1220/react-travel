@@ -1,30 +1,22 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { MainLayout } from "../../layouts/mainLayout";
 import { Divider, Typography } from "antd";
 import {
-  Button as SAPButton,
-  Input as SAPInput,
-  Dialog,
-  Bar,
-  Title,
-  Table as SAPTable,
+  Button,
+  Table,
   TableColumn,
   TableRow,
   TableCell,
   Label,
 } from "@ui5/webcomponents-react";
 import { useSelector, useAppDispatch } from "../../redux/hooks";
-import {
-  getTodolist,
-  addTodolist,
-  editTodolist,
-  delTodolist,
-} from "../../redux/todolist/slice";
+import { getTodolist, delTodolist } from "../../redux/todolist/slice";
 import jwt_decode, { JwtPayload as DefaultJwtPayload } from "jwt-decode";
 import { Container } from "../../components/styles/main";
 import { ProcessPendingDialog } from "../../components/diglog";
+import { Pagination } from "../../components";
 
-// 繼承並新增username字段
+// 繼承並新增username
 interface JwtPayload extends DefaultJwtPayload {
   username: string;
 }
@@ -36,29 +28,23 @@ interface FormType {
   username: string;
 }
 
-export const TodolistPage: React.FC = (props) => {
-  // JWT解碼
+export const TodolistPage: React.FC = () => {
+  const dispatch = useAppDispatch();
   const jwt = useSelector((state) => state.user.token);
-  // 表單的欄位
+  const [title, setTitle] = useState("");
+  const [option, setOption] = useState("");
+  const [dialogState, setDialogState] = useState(false);
   const [formData, setFormData] = useState<FormType>({
     id: null,
     todos: "",
     remarks: "",
     username: "",
   });
-  // 對話框欄位
-  const [dialogIsOpen, setDialogIsOpen] = useState(false);
-
-  // 取得待辦事項清單
   const dataSource = useSelector((state) => state.todolist.data);
-  // console.log(dataSource);
-
-  const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (jwt) {
       dispatch(getTodolist());
-      // jwt解碼，並將解碼後的username顯示在header
       const token = jwt_decode<JwtPayload>(jwt);
       setFormData({
         id: null,
@@ -68,30 +54,32 @@ export const TodolistPage: React.FC = (props) => {
       });
     }
   }, []);
+
+  const DialogComponentMemo = useMemo(
+    () => (
+      <ProcessPendingDialog
+        title={title}
+        option={option}
+        isOpen={dialogState}
+        onChangeStatus={setDialogState}
+        formData={formData}
+        setFormData={setFormData}
+      ></ProcessPendingDialog>
+    ),
+    [dialogState, formData]
+  );
+
   return (
     <MainLayout>
       <Container>
         <Divider orientation="left">
           <Typography.Title level={3}>本週待辦事項</Typography.Title>
         </Divider>
-        <SAPInput
-          style={{ width: "30%" }}
-          value={formData.todos}
-          onChange={(e) => setFormData({ ...formData, todos: e.target.value })}
-          placeholder="請輸入待辦事項..."
-        ></SAPInput>
-        <SAPInput
-          style={{ width: "30%" }}
-          value={formData.remarks}
-          onChange={(e) =>
-            setFormData({ ...formData, remarks: e.target.value })
-          }
-          placeholder="請輸入備註..."
-        ></SAPInput>
-        <SAPButton
+        <Button
           onClick={() => {
-            // console.log(formData);
-            dispatch(addTodolist(formData));
+            setTitle("新增待辦事項");
+            setDialogState(true);
+            setOption("add");
             setFormData({
               id: null,
               todos: "",
@@ -100,10 +88,10 @@ export const TodolistPage: React.FC = (props) => {
             });
           }}
         >
-          送出
-        </SAPButton>
+          新增
+        </Button>
         <br />
-        <SAPTable
+        <Table
           columns={
             <>
               <TableColumn minWidth={100}>
@@ -141,13 +129,14 @@ export const TodolistPage: React.FC = (props) => {
               <TableCell>
                 <div>
                   {/* 編輯功能 */}
-                  <SAPButton
+                  <Button
                     design="Positive"
                     icon="edit"
                     style={{ marginRight: "5px" }}
                     onClick={() => {
-                      setDialogIsOpen(true);
-                      // console.log(e);
+                      setTitle("編輯待辦事項");
+                      setDialogState(true);
+                      setOption("edit");
                       setFormData({
                         id: e.id,
                         todos: e.todos,
@@ -155,62 +144,9 @@ export const TodolistPage: React.FC = (props) => {
                         username: e.username,
                       });
                     }}
-                  ></SAPButton>
-                  <ProcessPendingDialog
-                    dialogIsOpen={dialogIsOpen}
-                    setDialogIsOpen={setDialogIsOpen}
-                  ></ProcessPendingDialog>
-                  {/* <Dialog
-                    open={dialogIsOpen}
-                    header={
-                      <Bar>
-                        <Title>編輯待辦事項</Title>
-                      </Bar>
-                    }
-                    footer={
-                      <Bar
-                        endContent={
-                          <>
-                            <SAPButton
-                              onClick={async () => {
-                                await dispatch(editTodolist(formData));
-                                setDialogIsOpen(false);
-                                dispatch(getTodolist());
-                              }}
-                            >
-                              確認
-                            </SAPButton>
-                            <SAPButton
-                              onClick={() => {
-                                setDialogIsOpen(false);
-                              }}
-                            >
-                              取消
-                            </SAPButton>
-                          </>
-                        }
-                      />
-                    }
-                  >
-                    <SAPInput
-                      style={{ display: "block" }}
-                      value={formData.todos}
-                      onChange={(e) =>
-                        setFormData({ ...formData, todos: e.target.value })
-                      }
-                      placeholder="請輸入待辦事項..."
-                    ></SAPInput>
-                    <SAPInput
-                      style={{ display: "block" }}
-                      value={formData.remarks}
-                      onChange={(e) =>
-                        setFormData({ ...formData, remarks: e.target.value })
-                      }
-                      placeholder="請輸入備註..."
-                    ></SAPInput>
-                  </Dialog> */}
+                  ></Button>
                   {/* 刪除功能 */}
-                  <SAPButton
+                  <Button
                     design="Negative"
                     icon="delete"
                     onClick={() => {
@@ -218,12 +154,15 @@ export const TodolistPage: React.FC = (props) => {
                       dispatch(delTodolist(e.id));
                       dispatch(getTodolist());
                     }}
-                  ></SAPButton>
+                  ></Button>
                 </div>
               </TableCell>
             </TableRow>
           ))}
-        </SAPTable>
+        </Table>
+        {/* Dialog元件 */}
+        <>{DialogComponentMemo}</>
+        <Pagination></Pagination>
       </Container>
     </MainLayout>
   );
