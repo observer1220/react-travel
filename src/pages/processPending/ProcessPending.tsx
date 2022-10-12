@@ -28,7 +28,7 @@ import {
 } from "../../redux/processPending/slice";
 import jwt_decode, { JwtPayload as DefaultJwtPayload } from "jwt-decode";
 import ExcelJs from "exceljs";
-import { ProcessPendingDialog } from "../../components";
+import { DialogComponent } from "../../components/diglog";
 
 interface IFormInput {
   purchaseOrderNo: any;

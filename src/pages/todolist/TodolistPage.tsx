@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { MainLayout } from "../../layouts/mainLayout";
-import { Divider, Typography } from "antd";
+import { Divider } from "antd";
 import {
   Button,
   Table,
@@ -8,12 +8,13 @@ import {
   TableRow,
   TableCell,
   Label,
+  Title,
 } from "@ui5/webcomponents-react";
 import { useSelector, useAppDispatch } from "../../redux/hooks";
 import { getTodolist, delTodolist } from "../../redux/todolist/slice";
 import jwt_decode, { JwtPayload as DefaultJwtPayload } from "jwt-decode";
 import { Container } from "../../components/styles/main";
-import { ProcessPendingDialog } from "../../components/diglog";
+import { DialogComponent } from "../../components/diglog";
 import { Pagination } from "../../components";
 
 // 繼承並新增username
@@ -30,18 +31,33 @@ interface FormType {
 
 export const TodolistPage: React.FC = () => {
   const dispatch = useAppDispatch();
+  // 賦值
   const jwt = useSelector((state) => state.user.token);
+  const dataSource = useSelector((state) => state.todolist.data);
+  // 方法
   const [title, setTitle] = useState("");
   const [option, setOption] = useState("");
-  const [dialogState, setDialogState] = useState(false);
+  const [dialogStatus, setDialogStatus] = useState(false);
   const [formData, setFormData] = useState<FormType>({
     id: null,
     todos: "",
     remarks: "",
     username: "",
   });
-  const dataSource = useSelector((state) => state.todolist.data);
+  const [fieldName] = useState<any>([
+    {
+      label: "待辦事項",
+      placeholder: "請輸入待辦事項...",
+      name: "todos",
+    },
+    {
+      label: "備註",
+      placeholder: "請輸入備註...",
+      name: "remarks",
+    },
+  ]);
 
+  // 類似生命週期的初始化階段
   useEffect(() => {
     if (jwt) {
       dispatch(getTodolist());
@@ -55,30 +71,36 @@ export const TodolistPage: React.FC = () => {
     }
   }, []);
 
+  // 只有在關注點有數值改變時才會重新渲染
   const DialogComponentMemo = useMemo(
     () => (
-      <ProcessPendingDialog
-        title={title}
+      <DialogComponent
+        dialogTitle={title}
         option={option}
-        isOpen={dialogState}
-        onChangeStatus={setDialogState}
+        isOpen={dialogStatus}
+        onChangeStatus={setDialogStatus}
         formData={formData}
         setFormData={setFormData}
-      ></ProcessPendingDialog>
+        fieldName={fieldName}
+      ></DialogComponent>
     ),
-    [dialogState, formData]
+    [dialogStatus, formData]
   );
 
   return (
     <MainLayout>
       <Container>
         <Divider orientation="left">
-          <Typography.Title level={3}>本週待辦事項</Typography.Title>
+          <Title level="H2" style={{ color: "white" }}>
+            本週待辦事項
+          </Title>
         </Divider>
         <Button
+          design="Positive"
+          icon="add"
           onClick={() => {
             setTitle("新增待辦事項");
-            setDialogState(true);
+            setDialogStatus(true);
             setOption("add");
             setFormData({
               id: null,
@@ -87,9 +109,7 @@ export const TodolistPage: React.FC = () => {
               username: formData.username,
             });
           }}
-        >
-          新增
-        </Button>
+        />
         <br />
         <Table
           columns={
@@ -135,7 +155,7 @@ export const TodolistPage: React.FC = () => {
                     style={{ marginRight: "5px" }}
                     onClick={() => {
                       setTitle("編輯待辦事項");
-                      setDialogState(true);
+                      setDialogStatus(true);
                       setOption("edit");
                       setFormData({
                         id: e.id,
@@ -150,7 +170,6 @@ export const TodolistPage: React.FC = () => {
                     design="Negative"
                     icon="delete"
                     onClick={() => {
-                      // console.log(e.id);
                       dispatch(delTodolist(e.id));
                       dispatch(getTodolist());
                     }}

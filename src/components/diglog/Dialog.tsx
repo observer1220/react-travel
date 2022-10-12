@@ -1,5 +1,13 @@
 import { useAppDispatch } from "../../redux/hooks";
-import { Input, Button, Dialog, Bar, Title } from "@ui5/webcomponents-react";
+import {
+  Input,
+  Button,
+  Dialog,
+  Bar,
+  Title,
+  Form,
+  FormItem,
+} from "@ui5/webcomponents-react";
 import {
   addTodolist,
   editTodolist,
@@ -14,29 +22,35 @@ interface FormType {
 }
 
 interface PropsType {
-  title: string;
+  dialogTitle: string;
   option: string;
   isOpen: boolean;
   onChangeStatus: React.Dispatch<React.SetStateAction<boolean>>;
   formData: any;
   setFormData: React.Dispatch<React.SetStateAction<FormType>>;
+  fieldName: any;
 }
 
-export const ProcessPendingDialog: React.FC<PropsType> = ({
-  title,
+export const DialogComponent: React.FC<PropsType> = ({
+  dialogTitle,
   option,
   isOpen,
   onChangeStatus,
   formData,
   setFormData,
+  fieldName,
 }) => {
   const dispatch = useAppDispatch();
+  console.log(fieldName);
+
   return (
     <Dialog
       open={isOpen}
       header={
         <Bar>
-          <Title>{title}</Title>
+          <Title level="H3">
+            <strong>{dialogTitle}</strong>
+          </Title>
         </Bar>
       }
       footer={
@@ -74,18 +88,19 @@ export const ProcessPendingDialog: React.FC<PropsType> = ({
         />
       }
     >
-      <Input
-        style={{ display: "block" }}
-        value={formData.todos}
-        onChange={(e) => setFormData({ ...formData, todos: e.target.value })}
-        placeholder="請輸入待辦事項..."
-      ></Input>
-      <Input
-        style={{ display: "block" }}
-        value={formData.remarks}
-        onChange={(e) => setFormData({ ...formData, remarks: e.target.value })}
-        placeholder="請輸入備註..."
-      ></Input>
+      <Form>
+        {fieldName.map((e, idx) => (
+          <FormItem label={e.label} key={idx}>
+            <Input
+              value={formData[e.name]}
+              onChange={(event) =>
+                setFormData({ ...formData, [e.name]: event.target.value })
+              }
+              placeholder={e.placeholder}
+            ></Input>
+          </FormItem>
+        ))}
+      </Form>
     </Dialog>
   );
 };
