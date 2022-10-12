@@ -48,6 +48,7 @@ export const TodolistPage: React.FC = (props) => {
   });
   // 對話框欄位
   const [dialogIsOpen, setDialogIsOpen] = useState(false);
+
   // 取得待辦事項清單
   const dataSource = useSelector((state) => state.todolist.data);
   // console.log(dataSource);
@@ -103,7 +104,6 @@ export const TodolistPage: React.FC = (props) => {
         </SAPButton>
         <br />
         <SAPTable
-          style={{ background: "red" }}
           columns={
             <>
               <TableColumn minWidth={100}>

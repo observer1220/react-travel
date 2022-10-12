@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useAppDispatch, useSelector } from "../../redux/hooks";
 import {
   Input,
@@ -22,7 +22,7 @@ interface FormType {
 
 interface PropsType {
   dialogIsOpen: boolean;
-  setDialogIsOpen: any;
+  setDialogIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const ProcessPendingDialog: React.FC<PropsType> = ({
@@ -30,7 +30,7 @@ export const ProcessPendingDialog: React.FC<PropsType> = ({
   setDialogIsOpen,
 }) => {
   const dispatch = useAppDispatch();
-  // console.log(dialogIsOpen, setDialogIsOpen);
+  console.log(dialogIsOpen);
 
   const [formData, setFormData] = useState<FormType>({
     id: null,

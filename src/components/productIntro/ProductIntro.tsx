@@ -48,6 +48,8 @@ export const ProductIntro: FC<PropsType> = ({
   rating,
   pictures,
 }) => {
+  // console.log(title, price);
+
   const tableDataSource: RowType[] = [
     {
       key: 0,
@@ -98,6 +100,7 @@ export const ProductIntro: FC<PropsType> = ({
       ),
     },
   ];
+
   return (
     <div className={styles["intro-container"]}>
       <Typography.Title level={4}>{title}</Typography.Title>
