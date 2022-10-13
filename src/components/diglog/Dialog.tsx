@@ -7,6 +7,10 @@ import {
   Title,
   Form,
   FormItem,
+  TextArea,
+  Select,
+  Option,
+  DatePicker,
 } from "@ui5/webcomponents-react";
 import {
   addTodolist,
@@ -18,6 +22,8 @@ interface FormType {
   id: any;
   todos: any;
   remarks: any;
+  category: any;
+  EstEndDate: any;
   username: string;
 }
 
@@ -41,8 +47,6 @@ export const DialogComponent: React.FC<PropsType> = ({
   fieldName,
 }) => {
   const dispatch = useAppDispatch();
-  console.log(fieldName);
-
   return (
     <Dialog
       open={isOpen}
@@ -59,12 +63,15 @@ export const DialogComponent: React.FC<PropsType> = ({
             <>
               <Button
                 onClick={async () => {
+                  // console.log(formData);
                   if (option === "add") {
                     await dispatch(addTodolist(formData));
                     setFormData({
                       id: null,
                       todos: "",
                       remarks: "",
+                      category: "",
+                      EstEndDate: "",
                       username: formData.username,
                     });
                   } else if (option === "edit") {
@@ -89,15 +96,52 @@ export const DialogComponent: React.FC<PropsType> = ({
       }
     >
       <Form>
-        {fieldName.map((e, idx) => (
-          <FormItem label={e.label} key={idx}>
-            <Input
-              value={formData[e.name]}
-              onChange={(event) =>
-                setFormData({ ...formData, [e.name]: event.target.value })
-              }
-              placeholder={e.placeholder}
-            ></Input>
+        {fieldName.map((item, idx) => (
+          <FormItem label={item.label} key={idx}>
+            {item.type === "input" && (
+              <Input
+                value={formData[item.name]}
+                onChange={(event) =>
+                  setFormData({ ...formData, [item.name]: event.target.value })
+                }
+                placeholder={item.placeholder}
+              />
+            )}
+            {item.type === "textarea" && (
+              <TextArea
+                value={formData[item.name]}
+                onChange={(event) =>
+                  setFormData({ ...formData, [item.name]: event.target.value })
+                }
+                placeholder={item.placeholder}
+              />
+            )}
+            {item.type === "select" && (
+              <Select
+                onChange={(event) => {
+                  setFormData({
+                    ...formData,
+                    [item.name]: event.detail.selectedOption.dataset.id,
+                  });
+                }}
+              >
+                <Option data-id=""></Option>
+                <Option data-id="高">高</Option>
+                <Option data-id="中">中</Option>
+                <Option data-id="低">低</Option>
+              </Select>
+            )}
+            {item.type === "datepicker" && (
+              <DatePicker
+                value={formData[item.name]}
+                onChange={(event) => {
+                  // console.log(event.detail.value);
+                  setFormData({ ...formData, [item.name]: event.detail.value });
+                }}
+                placeholder={item.placeholder}
+                primaryCalendarType="Gregorian"
+              />
+            )}
           </FormItem>
         ))}
       </Form>

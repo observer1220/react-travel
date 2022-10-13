@@ -28,12 +28,20 @@ export const getTodolist = createAsyncThunk(
 export const addTodolist = createAsyncThunk(
   "todolist/addTodolist",
   async (
-    formData: { todos: string; remarks: string; username: string },
+    formData: {
+      todos: string;
+      remarks: string;
+      category: string;
+      EstEndDate: string;
+      username: string;
+    },
     thunkAPI
   ) => {
     const { data } = await axios.post("http://localhost:3002/posts", {
       todos: formData.todos,
       remarks: formData.remarks,
+      category: formData.category,
+      EstEndDate: formData.EstEndDate,
       username: formData.username,
     });
     // console.log(data);
@@ -45,7 +53,14 @@ export const addTodolist = createAsyncThunk(
 export const editTodolist = createAsyncThunk(
   "todolist/editTodolist",
   async (
-    formData: { todos: string; remarks: string; username: string; id: number },
+    formData: {
+      id: number;
+      todos: string;
+      remarks: string;
+      category: string;
+      EstEndDate: string;
+      username: string;
+    },
     thunkAPI
   ) => {
     const { data } = await axios.put(
@@ -53,6 +68,8 @@ export const editTodolist = createAsyncThunk(
       {
         todos: formData.todos,
         remarks: formData.remarks,
+        category: formData.category,
+        EstEndDate: formData.EstEndDate,
         username: formData.username,
       }
     );

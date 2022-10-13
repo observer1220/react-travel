@@ -15,7 +15,8 @@ import { getTodolist, delTodolist } from "../../redux/todolist/slice";
 import jwt_decode, { JwtPayload as DefaultJwtPayload } from "jwt-decode";
 import { Container } from "../../components/styles/main";
 import { DialogComponent } from "../../components/diglog";
-import { Pagination } from "../../components";
+import { Pagination } from "../../components/Pagination";
+import styles from "./TodolistPage.module.css";
 
 // 繼承並新增username
 interface JwtPayload extends DefaultJwtPayload {
@@ -26,8 +27,12 @@ interface FormType {
   id: any;
   todos: any;
   remarks: any;
+  category: any;
+  EstEndDate: any;
   username: string;
 }
+
+let PageSize = 5;
 
 export const TodolistPage: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -42,20 +47,45 @@ export const TodolistPage: React.FC = () => {
     id: null,
     todos: "",
     remarks: "",
+    category: "",
+    EstEndDate: "",
     username: "",
   });
-  const [fieldName] = useState<any>([
+  const [fieldName] = useState([
+    {
+      label: "優先順序",
+      placeholder: "請選擇優先順序...",
+      name: "category",
+      type: "select",
+    },
+    {
+      label: "預計完成日",
+      placeholder: "請選擇預計完成日...",
+      name: "EstEndDate",
+      type: "datepicker",
+    },
     {
       label: "待辦事項",
       placeholder: "請輸入待辦事項...",
       name: "todos",
+      type: "input",
     },
     {
       label: "備註",
       placeholder: "請輸入備註...",
       name: "remarks",
+      type: "textarea",
     },
   ]);
+
+  // 設定分頁
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const currentTableData = useMemo(() => {
+    const firstPageIndex = (currentPage - 1) * PageSize;
+    const lastPageIndex = firstPageIndex + PageSize;
+    return dataSource.slice(firstPageIndex, lastPageIndex);
+  }, [currentPage]);
 
   // 類似生命週期的初始化階段
   useEffect(() => {
@@ -66,12 +96,14 @@ export const TodolistPage: React.FC = () => {
         id: null,
         todos: "",
         remarks: "",
+        category: "",
+        EstEndDate: "",
         username: token.username,
       });
     }
   }, []);
 
-  // 只有在關注點有數值改變時才會重新渲染
+  // 只有在關注點數值變更時才會重新渲染
   const DialogComponentMemo = useMemo(
     () => (
       <DialogComponent
@@ -106,6 +138,8 @@ export const TodolistPage: React.FC = () => {
               id: null,
               todos: "",
               remarks: "",
+              category: "",
+              EstEndDate: "",
               username: formData.username,
             });
           }}
@@ -116,6 +150,12 @@ export const TodolistPage: React.FC = () => {
             <>
               <TableColumn minWidth={100}>
                 <Label>ID</Label>
+              </TableColumn>
+              <TableColumn minWidth={100}>
+                <Label>優先順序</Label>
+              </TableColumn>
+              <TableColumn>
+                <Label>預計完成日</Label>
               </TableColumn>
               <TableColumn minWidth={800}>
                 <Label>待辦事項</Label>
@@ -132,10 +172,16 @@ export const TodolistPage: React.FC = () => {
             </>
           }
         >
-          {dataSource.map((e, idx) => (
+          {currentTableData.map((e, idx) => (
             <TableRow key={idx}>
               <TableCell>
                 <Label>{e.id}</Label>
+              </TableCell>
+              <TableCell>
+                <Label>{e.category}</Label>
+              </TableCell>
+              <TableCell>
+                <Label>{e.EstEndDate}</Label>
               </TableCell>
               <TableCell>
                 <Label>{e.todos}</Label>
@@ -161,6 +207,8 @@ export const TodolistPage: React.FC = () => {
                         id: e.id,
                         todos: e.todos,
                         remarks: e.remarks,
+                        category: e.category,
+                        EstEndDate: e.EstEndDate,
                         username: e.username,
                       });
                     }}
@@ -169,8 +217,8 @@ export const TodolistPage: React.FC = () => {
                   <Button
                     design="Negative"
                     icon="delete"
-                    onClick={() => {
-                      dispatch(delTodolist(e.id));
+                    onClick={async () => {
+                      await dispatch(delTodolist(e.id));
                       dispatch(getTodolist());
                     }}
                   ></Button>
@@ -181,7 +229,14 @@ export const TodolistPage: React.FC = () => {
         </Table>
         {/* Dialog元件 */}
         <>{DialogComponentMemo}</>
-        <Pagination></Pagination>
+        <Pagination
+          className={styles["pagination-bar"]}
+          currentPage={currentPage}
+          totalCount={dataSource.length}
+          pageSize={PageSize}
+          siblingCount={1}
+          onPageChange={(page) => setCurrentPage(page)}
+        />
       </Container>
     </MainLayout>
   );
