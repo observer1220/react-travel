@@ -22,7 +22,7 @@ import {
 } from "./redux/shoppingCart/slice";
 // 以下是Styled-components的引用
 import { ThemeProvider } from "styled-components";
-import { BackTop, Drawer, Button, Affix } from "antd";
+import { BackTop, Drawer, Affix } from "antd";
 import { changeDrawerState } from "./redux/shoppingCart/slice";
 import { ProductList } from "./components/productList/index";
 import { PaymentCard } from "./components";

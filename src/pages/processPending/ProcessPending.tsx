@@ -11,15 +11,11 @@ import {
   TableColumn,
   TableRow,
   TableCell,
-  Dialog,
   Bar,
   Title,
-  TableGrowingMode,
-  CheckBox,
-  Switch,
 } from "@ui5/webcomponents-react";
 import { useAppDispatch, useSelector } from "../../redux/hooks";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   delProcessPendingList,
   editProcessPendingList,
@@ -47,13 +43,6 @@ interface IFormInput {
   completedQTY: any;
 }
 
-// interface FormType {
-//   id: any;
-//   todos: any;
-//   remarks: any;
-//   username: string;
-// }
-
 // 繼承並新增username字段
 interface JwtPayload extends DefaultJwtPayload {
   username: string;
@@ -61,13 +50,105 @@ interface JwtPayload extends DefaultJwtPayload {
 
 export const ProcessPendingPage: React.FC = () => {
   const jwt = useSelector((state) => state.user.token);
-  const [dialogIsOpen, setDialogIsOpen] = useState(false);
-  // const [formData, setFormData] = useState<FormType>({
-  //   id: null,
-  //   todos: "",
-  //   remarks: "",
-  //   username: "",
-  // });
+  const [title, setTitle] = useState("");
+  const [option, setOption] = useState("");
+  const [dialogStatus, setDialogStatus] = useState(false);
+  const [formData, setFormData] = useState<any>({
+    id: null,
+    todos: "",
+    remarks: "",
+    category: "",
+    EstEndDate: "",
+    username: "",
+  });
+
+  // 對話框欄位設定
+  const [fieldName] = useState([
+    {
+      label: "採購單號",
+      placeholder: "請輸入採購單號...",
+      name: "purchaseOrderNo",
+      type: "input",
+    },
+    {
+      label: "採購單項次",
+      placeholder: "請輸入採購單項次...",
+      name: "purchaseOrderLine",
+      type: "input",
+    },
+    {
+      label: "廠商代號",
+      placeholder: "請輸入廠商代號...",
+      name: "ManufacturerCode",
+      type: "input",
+    },
+    {
+      label: "工單單別",
+      placeholder: "請輸入工單單別...",
+      name: "orderType",
+      type: "input",
+    },
+    {
+      label: "工單單號內外徑",
+      placeholder: "請輸入工單單號內外徑...",
+      name: "orderNo",
+      type: "input",
+    },
+    {
+      label: "品名",
+      placeholder: "請輸入品名...",
+      name: "ProductName",
+      type: "input",
+    },
+    {
+      label: "標準內文碼",
+      placeholder: "請輸入標準內文碼...",
+      name: "StandardTextCode",
+      type: "input",
+    },
+    {
+      label: "製程代號",
+      placeholder: "請輸入製程代號...",
+      name: "ProcessCode",
+      type: "input",
+    },
+    {
+      label: "預計開工日",
+      placeholder: "請選擇預計開工日...",
+      name: "ESTStartDate",
+      type: "datepicker",
+    },
+    {
+      label: "預計完成日",
+      placeholder: "請選擇預計完成日...",
+      name: "ESTEndDate",
+      type: "datepicker",
+    },
+    {
+      label: "投入數量",
+      placeholder: "請輸入投入數量...",
+      name: "inputQTY",
+      type: "input",
+    },
+    {
+      label: "完成數量",
+      placeholder: "請輸入完成數量...",
+      name: "completedQTY",
+      type: "input",
+    },
+    {
+      label: "預交日期",
+      placeholder: "請選擇預交日期...",
+      name: "ESTDeliveryDate",
+      type: "datepicker",
+    },
+    {
+      label: "領料狀態",
+      placeholder: "",
+      name: "pickingStatus",
+      type: "switch",
+    },
+  ]);
 
   const {
     register,
@@ -78,7 +159,7 @@ export const ProcessPendingPage: React.FC = () => {
   const onSubmit = handleSubmit(async (data: IFormInput) => {
     // console.log(data);
     await dispatch(addProcessPendingList(data));
-    setDialogIsOpen(false);
+    setDialogStatus(false);
     dispatch(getProcessPendingList());
   });
 
@@ -94,10 +175,7 @@ export const ProcessPendingPage: React.FC = () => {
 
   useEffect(() => {
     if (jwt) {
-      // console.log(dispatch(getProcessPendingList()));
       dispatch(getProcessPendingList());
-
-      // jwt解碼，並將解碼後的username顯示在header
       const token = jwt_decode<JwtPayload>(jwt);
       // setFormData({
       //   id: null,
@@ -110,7 +188,6 @@ export const ProcessPendingPage: React.FC = () => {
 
   // 匯出至EXCEL
   const ExportBtn = () => {
-    // 設定時間
     let date = new Date();
     let Today =
       date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
@@ -118,7 +195,6 @@ export const ProcessPendingPage: React.FC = () => {
 
     // 創建試算表檔案
     const workbook = new ExcelJs.Workbook();
-    // console.log(workbook);
 
     //在檔案中新增工作表 參數放自訂名稱
     const sheet = workbook.addWorksheet(Today);
@@ -126,16 +202,14 @@ export const ProcessPendingPage: React.FC = () => {
     let outterArr: any = [];
     let innerArr: any = [];
     dataSource.forEach((item) => {
-      innerArr = [item.id, item.todos, item.remarks, item.username];
-      // console.log(innerArr);
+      innerArr = [item.orderType, item.todos, item.remarks, item.username];
       outterArr.push(innerArr);
       return innerArr;
     });
     // console.log(dataSource);
 
-    // 在工作表指定位置、格式並用columsn與rows屬性填寫內容
+    // 在工作表指定位置、格式並用columsn與rows屬性填寫內容從A1開始
     // 表格內看不到的，算是key值，讓你之後想要針對這個table去做額外設定的時候，可以指定到這個table
-    // 從A1開始
     sheet.addTable({
       name: "table名稱",
       ref: "A1",
@@ -154,8 +228,24 @@ export const ProcessPendingPage: React.FC = () => {
     });
   };
 
+  // 分頁元件: 只有dialogStatus及formData變更才會重新渲染
+  const DialogComponentMemo = useMemo(
+    () => (
+      <DialogComponent
+        dialogTitle={title}
+        option={option}
+        isOpen={dialogStatus}
+        onChangeStatus={setDialogStatus}
+        formData={formData}
+        // setFormData={setFormData}
+        fieldName={fieldName}
+      ></DialogComponent>
+    ),
+    [dialogStatus, formData]
+  );
+
   return (
-    <>
+    <div style={{ width: "100%", margin: "0 auto" }}>
       {/* 頂部欄位 */}
       <Bar
         endContent={
@@ -172,7 +262,7 @@ export const ProcessPendingPage: React.FC = () => {
       {/* 搜尋表單 */}
       <Form
         columnsXL={3}
-        columnsM={1}
+        columnsM={2}
         columnsS={1}
         style={{ background: "#f8fcfc" }}
       >
@@ -219,175 +309,44 @@ export const ProcessPendingPage: React.FC = () => {
           />
         </FormItem>
       </Form>
+      {/* 表格區域 */}
       <div style={{ background: "#deeff2", padding: "30px 0" }}>
-        <Bar
-          startContent={
-            <div>
-              <Button
-                style={{ margin: "0 5px" }}
-                // onClick={handleSubmit(onSubmit)}
-                icon="search"
-                design="Emphasized"
-              >
-                查詢
-              </Button>
-              <Button style={{ margin: "0 5px" }} onClick={ExportBtn}>
-                匯出至Excel
-              </Button>
-              <Button
-                style={{ margin: "0 5px" }}
-                onClick={() => {
-                  setDialogIsOpen(true);
-                  // console.log(handleSubmit(onSubmit));
-                }}
-              >
-                新增
-              </Button>
-              <Dialog
-                style={{ width: "60%" }}
-                open={dialogIsOpen}
-                header={
-                  <Bar>
-                    <Title>新增待辦製程</Title>
-                  </Bar>
-                }
-                footer={
-                  <Bar
-                    endContent={
-                      <>
-                        <Button
-                          onClick={async () => {
-                            onSubmit();
-                          }}
-                        >
-                          確認
-                        </Button>
-                        <Button
-                          onClick={() => {
-                            setDialogIsOpen(false);
-                          }}
-                        >
-                          取消
-                        </Button>
-                      </>
-                    }
-                  />
-                }
-              >
-                <Form
-                  columnsXL={3}
-                  columnsL={2}
-                  columnsM={2}
-                  columnsS={2}
-                  style={{ background: "#f8fcfc" }}
-                >
-                  <FormItem label="採購單號">
-                    <Input
-                      {...register("purchaseOrderNo", {
-                        required: true,
-                        maxLength: 12,
-                        pattern: /^[0-9A-Za-z]+$/i,
-                      })}
-                    />
-                  </FormItem>
-                  <FormItem label="採購單項次">
-                    <Input {...register("purchaseOrderLine")} />
-                  </FormItem>
-                  <FormItem label="廠商代號">
-                    <Input {...register("ManufacturerCode")} />
-                  </FormItem>
-                  <FormItem label="工單單別">
-                    <Input {...register("orderType")} />
-                  </FormItem>
-                  <FormItem label="工單單號內外徑">
-                    <Input {...register("orderNo", { required: true })} />
-                    {errors.orderNo?.type === "required" && <p>此欄位為必填</p>}
-                  </FormItem>
-                  <FormItem label="品名">
-                    <Input
-                      {...register("ProductName", {
-                        required: true,
-                      })}
-                    />
-                    {errors.ProductName?.type === "required" && (
-                      <p>此欄位為必填</p>
-                    )}
-                  </FormItem>
-                  <FormItem label="標準內文碼">
-                    <Input
-                      {...register("StandardTextCode", {
-                        required: true,
-                      })}
-                    />
-                    {errors.StandardTextCode?.type === "required" && (
-                      <p>此欄位為必填</p>
-                    )}
-                  </FormItem>
-                  <FormItem label="製程代號">
-                    <Input
-                      {...register("ProcessCode", {
-                        required: true,
-                      })}
-                    />
-                    {errors.ProcessCode?.type === "required" && (
-                      <p>此欄位為必填</p>
-                    )}
-                  </FormItem>
-                  <FormItem label="預計開工日">
-                    <DatePicker
-                      {...register("ESTStartDate", {
-                        required: true,
-                      })}
-                      primaryCalendarType="Gregorian"
-                    />
-                  </FormItem>
-                  <FormItem label="預計完成日">
-                    <DatePicker
-                      {...register("ESTEndDate", { required: true })}
-                      onChange={function noRefCheck() {}}
-                      onInput={function noRefCheck() {}}
-                      primaryCalendarType="Gregorian"
-                    />
-                  </FormItem>
-                  <FormItem label="投入數量">
-                    <Input
-                      {...register("inputQTY", {
-                        required: true,
-                        maxLength: 5,
-                        pattern: /^[0-9]+$/i,
-                      })}
-                    />
-                  </FormItem>
-                  <FormItem label="完成數量">
-                    <Input
-                      {...register("completedQTY", {
-                        required: true,
-                        maxLength: 5,
-                        pattern: /^[0-9]+$/i,
-                      })}
-                    />
-                  </FormItem>
-                  <FormItem label="預交日期">
-                    <DatePicker
-                      {...register("ESTDeliveryDate", { min: 18, max: 99 })}
-                      onChange={function noRefCheck() {}}
-                      onInput={function noRefCheck() {}}
-                      primaryCalendarType="Gregorian"
-                    />
-                  </FormItem>
-                  <FormItem label="領料狀態">
-                    <Switch {...register("pickingStatus")} />
-                  </FormItem>
-                </Form>
-              </Dialog>
-            </div>
-          }
-        ></Bar>
+        <div style={{ margin: "5px", float: "right" }}>
+          <Button style={{ margin: "0 5px" }} icon="search" design="Emphasized">
+            查詢
+          </Button>
+          <Button style={{ margin: "0 5px" }} onClick={ExportBtn}>
+            匯出至Excel
+          </Button>
+          <Button
+            icon="add"
+            style={{ margin: "0 5px" }}
+            onClick={() => {
+              setTitle("新增項目");
+              setDialogStatus(true);
+              setOption("add");
+              setFormData({
+                purchaseOrderNo: "",
+                purchaseOrderLine: "",
+                ManufacturerCode: "",
+                orderType: "",
+                orderNo: "",
+                ProductName: "",
+                StandardTextCode: "",
+                ProcessCode: "",
+                ESTStartDate: "",
+                ESTEndDate: "",
+                inputQTY: "",
+                completedQTY: "",
+                ESTDeliveryDate: "",
+                pickingStatus: "",
+              });
+            }}
+          />
+        </div>
         {/* 表格 */}
         <Table
           mode="MultiSelect"
-          // onLoadMore={onLoadMore}
-          growing={TableGrowingMode.Scroll}
           style={{
             height: "300px",
             overflow: "auto",
@@ -445,52 +404,52 @@ export const ProcessPendingPage: React.FC = () => {
             </>
           }
         >
-          {dataSource.map((e, idx) => (
+          {dataSource.map((item, idx) => (
             <TableRow key={idx}>
               <TableCell>
-                <Label>{e.id}</Label>
+                <Label>{item.id}</Label>
               </TableCell>
               <TableCell>
-                <Label>{e.purchaseOrderNo}</Label>
+                <Label>{item.purchaseOrderNo}</Label>
               </TableCell>
               <TableCell>
-                <Label>{e.purchaseOrderLine}</Label>
+                <Label>{item.purchaseOrderLine}</Label>
               </TableCell>
               <TableCell>
-                <Label>{e.ManufacturerCode}</Label>
+                <Label>{item.ManufacturerCode}</Label>
               </TableCell>
               <TableCell>
-                <Label>{e.orderType}</Label>
+                <Label>{item.orderType}</Label>
               </TableCell>
               <TableCell>
-                <Label>{e.orderNo}</Label>
+                <Label>{item.orderNo}</Label>
               </TableCell>
               <TableCell>
-                <Label>{e.ProductName}</Label>
+                <Label>{item.ProductName}</Label>
               </TableCell>
               <TableCell>
-                <Label>{e.StandardTextCode}</Label>
+                <Label>{item.StandardTextCode}</Label>
               </TableCell>
               <TableCell>
-                <Label>{e.ESTStartDate}</Label>
+                <Label>{item.ESTStartDate}</Label>
               </TableCell>
               <TableCell>
-                <Label>{e.ESTEndDate}</Label>
+                <Label>{item.ESTEndDate}</Label>
               </TableCell>
               <TableCell>
-                <Label>{e.ESTDeliveryDate}</Label>
+                <Label>{item.ESTDeliveryDate}</Label>
               </TableCell>
               <TableCell>
-                <Label>{e.inputQTY}</Label>
+                <Label>{item.inputQTY}</Label>
               </TableCell>
               <TableCell>
-                <Label>{e.completedQTY}</Label>
+                <Label>{item.completedQTY}</Label>
               </TableCell>
               <TableCell>
-                <Label>{e.ESTDeliveryDate}</Label>
+                <Label>{item.ESTDeliveryDate}</Label>
               </TableCell>
               <TableCell>
-                <Label>{e.pickingStatus}</Label>
+                <Label>{item.pickingStatus}</Label>
               </TableCell>
               <TableCell>
                 <div>
@@ -500,73 +459,33 @@ export const ProcessPendingPage: React.FC = () => {
                     icon="edit"
                     style={{ marginRight: "5px" }}
                     onClick={() => {
-                      setDialogIsOpen(true);
-                      // setFormData({
-                      //   id: e.id,
-                      //   todos: e.todos,
-                      //   remarks: e.remarks,
-                      //   username: e.username,
-                      // });
+                      setTitle("編輯項目");
+                      setDialogStatus(true);
+                      setOption("edit");
+                      setFormData({
+                        purchaseOrderNo: item.purchaseOrderNo,
+                        purchaseOrderLine: item.purchaseOrderLine,
+                        ManufacturerCode: item.ManufacturerCode,
+                        orderType: item.orderType,
+                        orderNo: item.orderNo,
+                        ProductName: item.ProductName,
+                        StandardTextCode: item.StandardTextCode,
+                        ProcessCode: item.ProcessCode,
+                        ESTStartDate: item.ESTStartDate,
+                        ESTEndDate: item.ESTEndDate,
+                        inputQTY: item.inputQTY,
+                        completedQTY: item.completedQTY,
+                        ESTDeliveryDate: item.ESTDeliveryDate,
+                        pickingStatus: item.pickingStatus,
+                      });
                     }}
                   ></Button>
-                  {/* <Dialog
-                    open={dialogIsOpen}
-                    header={
-                      <Bar>
-                        <Title>編輯待辦事項</Title>
-                      </Bar>
-                    }
-                    footer={
-                      <Bar
-                        endContent={
-                          <>
-                            <Button
-                              onClick={async () => {
-                                await dispatch(
-                                  editProcessPendingList(formData)
-                                );
-                                setDialogIsOpen(false);
-                                dispatch(getProcessPendingList());
-                              }}
-                            >
-                              確認
-                            </Button>
-                            <Button
-                              onClick={() => {
-                                setDialogIsOpen(false);
-                              }}
-                            >
-                              取消
-                            </Button>
-                          </>
-                        }
-                      />
-                    }
-                  >
-                    <Input
-                      style={{ display: "block" }}
-                      value={formData.todos}
-                      onChange={(e) =>
-                        setFormData({ ...formData, todos: e.target.value })
-                      }
-                      placeholder="請輸入待辦事項..."
-                    ></Input>
-                    <Input
-                      style={{ display: "block" }}
-                      value={formData.remarks}
-                      onChange={(e) =>
-                        setFormData({ ...formData, remarks: e.target.value })
-                      }
-                      placeholder="請輸入備註..."
-                    ></Input>
-                  </Dialog> */}
                   {/* 刪除功能 */}
                   <Button
                     design="Negative"
                     icon="delete"
                     onClick={() => {
-                      // console.log(e.id);
-                      dispatch(delProcessPendingList(e.id));
+                      dispatch(delProcessPendingList(item.id));
                       dispatch(getProcessPendingList());
                     }}
                   ></Button>
@@ -575,7 +494,94 @@ export const ProcessPendingPage: React.FC = () => {
             </TableRow>
           ))}
         </Table>
+        {/* Dialog Component */}
+        <>{DialogComponentMemo}</>
+        {/* 
+            <FormItem label="採購單項次">
+              <Input {...register("purchaseOrderLine")} />
+            </FormItem>
+            <FormItem label="廠商代號">
+              <Input {...register("ManufacturerCode")} />
+            </FormItem>
+            <FormItem label="工單單別">
+              <Input {...register("orderType")} />
+            </FormItem>
+            <FormItem label="工單單號內外徑">
+              <Input {...register("orderNo", { required: true })} />
+              {errors.orderNo?.type === "required" && <p>此欄位為必填</p>}
+            </FormItem>
+            <FormItem label="品名">
+              <Input
+                {...register("ProductName", {
+                  required: true,
+                })}
+              />
+              {errors.ProductName?.type === "required" && <p>此欄位為必填</p>}
+            </FormItem>
+            <FormItem label="標準內文碼">
+              <Input
+                {...register("StandardTextCode", {
+                  required: true,
+                })}
+              />
+              {errors.StandardTextCode?.type === "required" && (
+                <p>此欄位為必填</p>
+              )}
+            </FormItem>
+            <FormItem label="製程代號">
+              <Input
+                {...register("ProcessCode", {
+                  required: true,
+                })}
+              />
+              {errors.ProcessCode?.type === "required" && <p>此欄位為必填</p>}
+            </FormItem>
+            <FormItem label="預計開工日">
+              <DatePicker
+                {...register("ESTStartDate", {
+                  required: true,
+                })}
+                primaryCalendarType="Gregorian"
+              />
+            </FormItem>
+            <FormItem label="預計完成日">
+              <DatePicker
+                {...register("ESTEndDate", { required: true })}
+                onChange={function noRefCheck() {}}
+                onInput={function noRefCheck() {}}
+                primaryCalendarType="Gregorian"
+              />
+            </FormItem>
+            <FormItem label="投入數量">
+              <Input
+                {...register("inputQTY", {
+                  required: true,
+                  maxLength: 5,
+                  pattern: /^[0-9]+$/i,
+                })}
+              />
+            </FormItem>
+            <FormItem label="完成數量">
+              <Input
+                {...register("completedQTY", {
+                  required: true,
+                  maxLength: 5,
+                  pattern: /^[0-9]+$/i,
+                })}
+              />
+            </FormItem>
+            <FormItem label="預交日期">
+              <DatePicker
+                {...register("ESTDeliveryDate", { min: 18, max: 99 })}
+                onChange={function noRefCheck() {}}
+                onInput={function noRefCheck() {}}
+                primaryCalendarType="Gregorian"
+              />
+            </FormItem>
+            <FormItem label="領料狀態">
+              <Switch {...register("pickingStatus")} />
+            </FormItem> */}
       </div>
-    </>
+    </div>
   );
 };

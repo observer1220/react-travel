@@ -10,40 +10,24 @@ import {
   Label,
   Title,
 } from "@ui5/webcomponents-react";
+import styles from "./TodolistPage.module.css";
 import { useSelector, useAppDispatch } from "../../redux/hooks";
 import { getTodolist, delTodolist } from "../../redux/todolist/slice";
-import jwt_decode, { JwtPayload as DefaultJwtPayload } from "jwt-decode";
 import { Container } from "../../components/styles/main";
 import { DialogComponent } from "../../components/diglog";
 import { Pagination } from "../../components/Pagination";
-import styles from "./TodolistPage.module.css";
-
-// 繼承並新增username
-interface JwtPayload extends DefaultJwtPayload {
-  username: string;
-}
-
-interface FormType {
-  id: any;
-  todos: any;
-  remarks: any;
-  category: any;
-  EstEndDate: any;
-  username: string;
-}
+import { ExportButon } from "../../components";
 
 let PageSize = 5;
 
 export const TodolistPage: React.FC = () => {
   const dispatch = useAppDispatch();
-  // 賦值
   const jwt = useSelector((state) => state.user.token);
   const dataSource = useSelector((state) => state.todolist.data);
-  // 方法
   const [title, setTitle] = useState("");
   const [option, setOption] = useState("");
   const [dialogStatus, setDialogStatus] = useState(false);
-  const [formData, setFormData] = useState<FormType>({
+  const [formData, setFormData] = useState({
     id: null,
     todos: "",
     remarks: "",
@@ -51,59 +35,64 @@ export const TodolistPage: React.FC = () => {
     EstEndDate: "",
     username: "",
   });
+
+  // 對話框的種類
   const [fieldName] = useState([
     {
       label: "優先順序",
       placeholder: "請選擇優先順序...",
       name: "category",
       type: "select",
+      required: true,
     },
     {
       label: "預計完成日",
       placeholder: "請選擇預計完成日...",
       name: "EstEndDate",
       type: "datepicker",
+      required: true,
     },
     {
       label: "待辦事項",
       placeholder: "請輸入待辦事項...",
       name: "todos",
       type: "input",
+      required: true,
     },
     {
       label: "備註",
       placeholder: "請輸入備註...",
       name: "remarks",
-      type: "textarea",
+      type: "input",
+      required: true,
+      pattern: /^[A-Za-z]+$/i,
+      patternMsg: "只能輸入英文",
     },
   ]);
 
   // 設定分頁
   const [currentPage, setCurrentPage] = useState(1);
-
   const currentTableData = useMemo(() => {
     const firstPageIndex = (currentPage - 1) * PageSize;
     const lastPageIndex = firstPageIndex + PageSize;
     return dataSource.slice(firstPageIndex, lastPageIndex);
-  }, [currentPage]);
+  }, [currentPage, dataSource]);
 
-  // 類似生命週期的初始化階段
+  // 生命週期初始化階段
   useEffect(() => {
     if (jwt) {
       dispatch(getTodolist());
-      const token = jwt_decode<JwtPayload>(jwt);
-      setFormData({
-        id: null,
-        todos: "",
-        remarks: "",
-        category: "",
-        EstEndDate: "",
-        username: token.username,
-      });
     }
   }, []);
 
-  // 只有在關注點數值變更時才會重新渲染
+  const sourceLabel = [
+    { name: "ID" },
+    { name: "待辦事項" },
+    { name: "備註" },
+    { name: "建立人員" },
+  ];
+
+  // 分頁元件: 只有dialogStatus變更才會重新渲染
   const DialogComponentMemo = useMemo(
     () => (
       <DialogComponent
@@ -112,11 +101,11 @@ export const TodolistPage: React.FC = () => {
         isOpen={dialogStatus}
         onChangeStatus={setDialogStatus}
         formData={formData}
-        setFormData={setFormData}
+        // setFormData={setFormData}
         fieldName={fieldName}
       ></DialogComponent>
     ),
-    [dialogStatus, formData]
+    [dialogStatus]
   );
 
   return (
@@ -134,6 +123,7 @@ export const TodolistPage: React.FC = () => {
             setTitle("新增待辦事項");
             setDialogStatus(true);
             setOption("add");
+            // 每次進入對話框時清空欄位
             setFormData({
               id: null,
               todos: "",
@@ -144,6 +134,8 @@ export const TodolistPage: React.FC = () => {
             });
           }}
         />
+        {/* 匯出元件 */}
+        <ExportButon dataSource={dataSource} sourceLabel={sourceLabel} />
         <br />
         <Table
           columns={
@@ -227,15 +219,16 @@ export const TodolistPage: React.FC = () => {
             </TableRow>
           ))}
         </Table>
-        {/* Dialog元件 */}
+        {/* Dialog Component */}
         <>{DialogComponentMemo}</>
+        {/* Pagination Component  */}
         <Pagination
           className={styles["pagination-bar"]}
           currentPage={currentPage}
           totalCount={dataSource.length}
           pageSize={PageSize}
           siblingCount={1}
-          onPageChange={(page) => setCurrentPage(page)}
+          onPageChange={(page: number) => setCurrentPage(page)}
         />
       </Container>
     </MainLayout>

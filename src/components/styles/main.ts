@@ -7,5 +7,4 @@ export const Container = styled.div`
   padding: 5px 20px;
   background-color: ${({ theme }) => theme.colors.header};
   border-radius: 8px;
-  color: white;
 `;

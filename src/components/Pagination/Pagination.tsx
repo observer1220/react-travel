@@ -1,6 +1,6 @@
-import classnames from "classnames";
+import { Icon } from "@ui5/webcomponents-react";
 import { usePagination, DOTS } from "../../redux/usePagination";
-import "./Pagination.module.scss";
+import styles from "./Pagination.module.scss";
 
 interface PropsType {
   onPageChange: any;
@@ -39,40 +39,40 @@ export const Pagination: React.FC<PropsType> = ({
   };
 
   let lastPage = paginationRange[paginationRange.length - 1];
+
   return (
-    <ul className={classnames("pagination-container")}>
+    <ul className={styles["pagination-container"]}>
       <li
-        className={classnames("pagination-item", {
-          disabled: currentPage === 1,
-        })}
+        className={styles["pagination-item"]}
         onClick={onPrevious}
+        style={{ display: currentPage === 1 ? "none" : "" }}
       >
-        <div className="arrow left" />
+        <Icon name="slim-arrow-left" style={{ color: "white" }} />
       </li>
       {paginationRange.map((pageNumber, idx) => {
         if (pageNumber === DOTS) {
-          return <li className="pagination-item dots">&#8230;</li>;
+          return <li className={styles["pagination-item dots"]}>...</li>;
         }
-
         return (
           <li
             key={idx}
-            className={classnames("pagination-item", {
-              selected: pageNumber === currentPage,
-            })}
+            className={styles["pagination-item"]}
             onClick={() => onPageChange(pageNumber)}
+            style={{
+              background:
+                pageNumber === currentPage ? "rgba(0, 0, 0, 0.08)" : "",
+            }}
           >
             {pageNumber}
           </li>
         );
       })}
       <li
-        className={classnames("pagination-item", {
-          disabled: currentPage === lastPage,
-        })}
+        className={styles["pagination-item"]}
         onClick={onNext}
+        style={{ display: currentPage === lastPage ? "none" : "" }}
       >
-        <div className="arrow right" />
+        <Icon name="slim-arrow-right" style={{ color: "white" }} />
       </li>
     </ul>
   );
