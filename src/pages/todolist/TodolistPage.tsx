@@ -58,6 +58,8 @@ export const TodolistPage: React.FC = () => {
       name: "todos",
       type: "input",
       required: true,
+      minLength: 2,
+      maxLength: 10,
     },
     {
       label: "備註",

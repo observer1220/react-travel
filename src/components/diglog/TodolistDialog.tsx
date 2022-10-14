@@ -70,11 +70,13 @@ export const DialogComponent: React.FC<PropsType> = ({
   }, [formData, reset]);
 
   const onSubmit = handleSubmit(async (data: any) => {
+    // 每一次新增資料時，註記建立人員是誰
     if (jwt) {
       const token = jwt_decode<JwtPayload>(jwt);
       data.username = token.username;
     }
 
+    //　用option跑不同的方法
     if (option === "add") {
       await dispatch(addTodolist(data));
     }
@@ -133,6 +135,8 @@ export const DialogComponent: React.FC<PropsType> = ({
                 {...register(item.name, {
                   required: item.required,
                   pattern: item.pattern,
+                  minLength: item.minLength,
+                  maxLength: item.maxLength,
                 })}
                 placeholder={item.placeholder}
               />
@@ -182,12 +186,21 @@ export const DialogComponent: React.FC<PropsType> = ({
               />
             )}
             {/* 錯誤訊息 */}
-            <div style={{ color: "red" }}>
+            <div style={{ color: "red", fontSize: "12px" }}>
               {errors[item.name]?.type === "required" && (
                 <p>{item.label}不得為空</p>
               )}
               {errors[item.name]?.type === "pattern" && (
                 <p>{item.patternMsg}</p>
+              )}
+              {errors[item.name]?.type === "minLength" && (
+                <p>不得少於{item.minLength}位數</p>
+              )}
+              {errors[item.name]?.type === "maxLength" && (
+                <p>不得多於{item.maxLength}位數</p>
+              )}
+              {errors[item.name]?.type === "min" && (
+                <p>數字不得低於{item.min}</p>
               )}
             </div>
           </FormItem>
