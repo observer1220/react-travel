@@ -33,6 +33,9 @@ export const addTodolist = createAsyncThunk(
       remarks: string;
       category: string;
       EstEndDate: string;
+      trustee: any;
+      phone: number;
+      enabled: boolean;
       username: string;
     },
     thunkAPI
@@ -42,6 +45,9 @@ export const addTodolist = createAsyncThunk(
       remarks: formData.remarks,
       category: formData.category,
       EstEndDate: formData.EstEndDate,
+      trustee: formData.trustee,
+      phone: formData.phone,
+      enabled: formData.enabled,
       username: formData.username,
     });
     // console.log(data);
@@ -59,6 +65,9 @@ export const editTodolist = createAsyncThunk(
       remarks: string;
       category: string;
       EstEndDate: string;
+      trustee: any;
+      phone: number;
+      enabled: boolean;
       username: string;
     },
     thunkAPI
@@ -70,6 +79,9 @@ export const editTodolist = createAsyncThunk(
         remarks: formData.remarks,
         category: formData.category,
         EstEndDate: formData.EstEndDate,
+        trustee: formData.trustee,
+        phone: formData.phone,
+        enabled: formData.enabled,
         username: formData.username,
       }
     );

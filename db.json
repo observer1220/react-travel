@@ -18,75 +18,19 @@
     },
     {
       "todos": "在家煮晚餐",
-      "remarks": "咖哩飯",
+      "remarks": "curry",
       "category": "低",
       "EstEndDate": "2022年10月21日",
+      "trustee": [
+        null,
+        "Vincent",
+        "Ruby",
+        "Kent"
+      ],
+      "phone": "2",
+      "enabled": true,
       "username": "duck@gmail.com",
       "id": 6
-    },
-    {
-      "todos": "做家事",
-      "remarks": "清濾網",
-      "category": "高",
-      "EstEndDate": "2022年10月14日",
-      "username": "observer1220@gmail.com",
-      "id": 16
-    },
-    {
-      "todos": "規劃行程",
-      "remarks": "去台東找阿嬤",
-      "category": "高",
-      "EstEndDate": "2022年10月14日",
-      "username": "duck@gmail.com",
-      "id": 17
-    },
-    {
-      "todos": "研究React",
-      "remarks": "欄位驗證",
-      "category": "高",
-      "EstEndDate": "2022年10月29日",
-      "username": "duck@gmail.com",
-      "id": 18
-    },
-    {
-      "todos": "研究SAP UI5",
-      "remarks": "父傳子",
-      "category": "中",
-      "EstEndDate": "2022年10月14日",
-      "username": "duck@gmail.com",
-      "id": 19
-    },
-    {
-      "todos": "購買樂器",
-      "remarks": "木吉他",
-      "category": "低",
-      "EstEndDate": "2022-10-13",
-      "username": "duck@gmail.com",
-      "id": 20
-    },
-    {
-      "todos": "111",
-      "remarks": "222",
-      "category": "低",
-      "EstEndDate": "2022-10-23",
-      "username": "duck@gmail.com",
-      "id": 21
-    },
-    {
-      "todos": "Party Time",
-      "remarks": "Pizza",
-      "category": "高",
-      "EstEndDate": "2022-11-01",
-      "username": "duck@gmail.com",
-      "id": 22
-    },
-    {
-      "todos": "最新",
-      "remarks": "latest",
-      "category": "高",
-      "EstEndDate": "2022-10-19",
-      "username": "duck@gmail.com",
-      "id": 23
     }
   ],
   "comments": [

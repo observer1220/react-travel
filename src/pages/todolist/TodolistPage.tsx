@@ -9,6 +9,7 @@ import {
   TableCell,
   Label,
   Title,
+  MessageBox,
 } from "@ui5/webcomponents-react";
 import styles from "./TodolistPage.module.css";
 import { useSelector, useAppDispatch } from "../../redux/hooks";
@@ -33,6 +34,9 @@ export const TodolistPage: React.FC = () => {
     remarks: "",
     category: "",
     EstEndDate: "",
+    trustee: [],
+    phone: 0,
+    enabled: true,
     username: "",
   });
 
@@ -43,21 +47,27 @@ export const TodolistPage: React.FC = () => {
       placeholder: "請選擇優先順序...",
       name: "category",
       type: "select",
-      required: true,
+      options: [
+        { label: "", value: "" },
+        { label: "高", value: "高" },
+        { label: "中", value: "中" },
+        { label: "低", value: "低" },
+      ],
+      required: false,
     },
     {
       label: "預計完成日",
       placeholder: "請選擇預計完成日...",
       name: "EstEndDate",
       type: "datepicker",
-      required: true,
+      required: false,
     },
     {
       label: "待辦事項",
       placeholder: "請輸入待辦事項...",
       name: "todos",
       type: "input",
-      required: true,
+      required: false,
       minLength: 2,
       maxLength: 10,
     },
@@ -66,9 +76,38 @@ export const TodolistPage: React.FC = () => {
       placeholder: "請輸入備註...",
       name: "remarks",
       type: "input",
-      required: true,
+      required: false,
       pattern: /^[A-Za-z]+$/i,
       patternMsg: "只能輸入英文",
+    },
+    {
+      label: "受託人",
+      // placeholder: "",
+      name: "trustee",
+      type: "checkbox",
+      options: [
+        { label: "Jack", value: "jack" },
+        { label: "Vincent", value: "vincent" },
+        { label: "Ruby", value: "ruby" },
+        { label: "Kent", value: "kent" },
+      ],
+      required: false,
+      // pattern: /^[A-Za-z]+$/i,
+      // patternMsg: "只能輸入英文",
+    },
+    {
+      label: "電話號碼",
+      name: "phone",
+      placeholder: "請輸入電話號碼",
+      type: "number",
+      required: "true",
+      min: 2,
+      max: 5,
+    },
+    {
+      label: "啟動與否",
+      name: "enabled",
+      type: "switch",
     },
   ]);
 
@@ -132,6 +171,9 @@ export const TodolistPage: React.FC = () => {
               remarks: "",
               category: "",
               EstEndDate: "",
+              trustee: [],
+              phone: 0,
+              enabled: true,
               username: formData.username,
             });
           }}
@@ -203,6 +245,9 @@ export const TodolistPage: React.FC = () => {
                         remarks: e.remarks,
                         category: e.category,
                         EstEndDate: e.EstEndDate,
+                        trustee: e.trustee,
+                        phone: e.phone,
+                        enabled: e.enabled,
                         username: e.username,
                       });
                     }}
@@ -232,6 +277,15 @@ export const TodolistPage: React.FC = () => {
           siblingCount={1}
           onPageChange={(page: number) => setCurrentPage(page)}
         />
+        {/* 提示視窗 */}
+        <MessageBox
+          onAfterOpen={function noRefCheck() {}}
+          onBeforeClose={function noRefCheck() {}}
+          onBeforeOpen={function noRefCheck() {}}
+          onClose={function noRefCheck() {}}
+        >
+          Press "Escape" to close the MessageBox.
+        </MessageBox>
       </Container>
     </MainLayout>
   );

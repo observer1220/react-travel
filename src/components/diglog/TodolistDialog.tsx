@@ -8,9 +8,11 @@ import {
   Form,
   FormItem,
   TextArea,
-  // Select,
-  // Option,
-  // DatePicker,
+  Switch,
+  DatePicker,
+  CheckBox,
+  Select,
+  Option,
 } from "@ui5/webcomponents-react";
 import {
   addTodolist,
@@ -19,8 +21,8 @@ import {
 } from "../../redux/todolist/slice";
 import { Controller, useForm } from "react-hook-form";
 import jwt_decode, { JwtPayload as DefaultJwtPayload } from "jwt-decode";
-import { useEffect } from "react";
-// import { Select, DatePicker } from "antd";
+import { useEffect, useState } from "react";
+// import { Switch } from "antd";
 
 interface JwtPayload extends DefaultJwtPayload {
   username: string;
@@ -32,6 +34,7 @@ interface FormType {
   remarks: any;
   category: any;
   EstEndDate: any;
+  trustee: any;
   username: string;
 }
 
@@ -63,6 +66,7 @@ export const DialogComponent: React.FC<PropsType> = ({
   } = useForm({
     defaultValues: formData,
   });
+  const [CheckboxList, setCheckboxList] = useState([]);
 
   // console.log(formData);
   useEffect(() => {
@@ -70,7 +74,8 @@ export const DialogComponent: React.FC<PropsType> = ({
   }, [formData, reset]);
 
   const onSubmit = handleSubmit(async (data: any) => {
-    // 每一次新增資料時，註記建立人員是誰
+    console.log(data);
+
     if (jwt) {
       const token = jwt_decode<JwtPayload>(jwt);
       data.username = token.username;
@@ -123,13 +128,14 @@ export const DialogComponent: React.FC<PropsType> = ({
     >
       <Form
         columnsXL={3}
-        columnsL={2}
-        columnsM={2}
-        columnsS={2}
+        columnsL={1}
+        columnsM={1}
+        columnsS={1}
         style={{ background: "#f8fcfc" }}
       >
         {fieldName.map((item, idx) => (
           <FormItem label={item.label} key={idx}>
+            {/* 一般輸入框 */}
             {item.type === "input" && (
               <Input
                 {...register(item.name, {
@@ -141,6 +147,7 @@ export const DialogComponent: React.FC<PropsType> = ({
                 placeholder={item.placeholder}
               />
             )}
+            {/* 多行輸入框 */}
             {item.type === "textarea" && (
               <TextArea
                 {...register(item.name, {
@@ -150,37 +157,95 @@ export const DialogComponent: React.FC<PropsType> = ({
                 placeholder={item.placeholder}
               />
             )}
+            {/* 下拉選單 */}
             {item.type === "select" && (
               <Controller
                 control={control}
                 name={item.name}
                 rules={{ required: item.required }}
                 render={({ field }) => (
-                  <select
-                    style={{
-                      width: "80px",
-                      height: "34px",
-                    }}
+                  <Select
                     {...field}
+                    onChange={(event) => {
+                      // console.log(event.detail.selectedOption.dataset.id);
+                      field.onChange(event.detail.selectedOption.dataset.id);
+                    }}
                   >
-                    <option value=""></option>
-                    <option value="高">高</option>
-                    <option value="中">中</option>
-                    <option value="低">低</option>
-                  </select>
+                    {item.options.map((element, idx) => (
+                      <Option key={idx} data-id={element.value}>
+                        {element.label}
+                      </Option>
+                    ))}
+                  </Select>
                 )}
               />
             )}
+            {/* 日期選單 */}
             {item.type === "datepicker" && (
               <Controller
                 control={control}
                 name={item.name}
                 rules={{ required: item.required }}
                 render={({ field }) => (
-                  <input
-                    type="date"
+                  <DatePicker
                     placeholder={item.placeholder}
                     {...field}
+                    onChange={(event) => {
+                      field.onChange(event.detail.value);
+                    }}
+                  />
+                )}
+              />
+            )}
+            {/* 複選框 */}
+            {item.type === "checkbox" && (
+              <div style={{ display: "flex" }}>
+                {item.options.map((element, idx) => {
+                  const fieldName: any = `trustee[${idx}]`;
+                  return (
+                    <Controller
+                      key={idx}
+                      control={control}
+                      name={fieldName}
+                      render={({ field }) => (
+                        <CheckBox
+                          text={element.label}
+                          onChange={(event: any) => {
+                            field.onChange(event.target.text);
+                            // console.log(field.value);
+                          }}
+                        />
+                      )}
+                    />
+                  );
+                })}
+              </div>
+            )}
+            {/* 純數字 */}
+            {item.type === "number" && (
+              <Input
+                type="Number"
+                {...register(item.name, {
+                  required: item.required,
+                  min: item.min,
+                  max: item.max,
+                })}
+                placeholder={item.placeholder}
+              />
+            )}
+            {/* 切換開關 */}
+            {item.type === "switch" && (
+              <Controller
+                key={idx}
+                control={control}
+                name={item.name}
+                render={({ field }) => (
+                  <Switch
+                    {...register(item.name)}
+                    {...field}
+                    onChange={(event) => {
+                      field.onChange(event.target.checked);
+                    }}
                   />
                 )}
               />
@@ -199,9 +264,8 @@ export const DialogComponent: React.FC<PropsType> = ({
               {errors[item.name]?.type === "maxLength" && (
                 <p>不得多於{item.maxLength}位數</p>
               )}
-              {errors[item.name]?.type === "min" && (
-                <p>數字不得低於{item.min}</p>
-              )}
+              {errors[item.name]?.type === "min" && <p>不得低於{item.min}</p>}
+              {errors[item.name]?.type === "max" && <p>不得大於{item.max}</p>}
             </div>
           </FormItem>
         ))}
