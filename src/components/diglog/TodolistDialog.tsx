@@ -21,8 +21,7 @@ import {
 } from "../../redux/todolist/slice";
 import { Controller, useForm } from "react-hook-form";
 import jwt_decode, { JwtPayload as DefaultJwtPayload } from "jwt-decode";
-import { useEffect, useState } from "react";
-// import { Switch } from "antd";
+import { useEffect } from "react";
 
 interface JwtPayload extends DefaultJwtPayload {
   username: string;
@@ -163,7 +162,7 @@ export const DialogComponent: React.FC<PropsType> = ({
                   required: item.required,
                 })}
                 placeholder={item.placeholder}
-                style={{ height: "34px", minWidth: "60px" }}
+                style={{ height: "34px", minWidth: "80px" }}
               >
                 {item.options.map((element, idx) => (
                   <option key={idx} value={element.value}>
@@ -176,10 +175,10 @@ export const DialogComponent: React.FC<PropsType> = ({
               //   control={control}
               //   name={item.name}
               //   rules={{ required: item.required }}
-              //   render={({ field: { onChange, name } }) => {
+              //   render={({ field: { onChange, name, value, ref } }) => {
               //     return (
               //       <Select
-              //         {...register(name)}
+              //         {...register(item.name)}
               //         placeholder={item.placeholder}
               //         onChange={(event) => {
               //           onChange(event.detail.selectedOption.dataset.id);
@@ -190,6 +189,7 @@ export const DialogComponent: React.FC<PropsType> = ({
               //             {element.label}
               //           </Option>
               //         ))}
+              //         inputRef={ref}
               //       </Select>
               //     );
               //   }}
@@ -229,6 +229,7 @@ export const DialogComponent: React.FC<PropsType> = ({
                             onChange(event.target.checked);
                           }}
                           checked={value}
+                          valueState="Success"
                         />
                       )}
                     />

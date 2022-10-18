@@ -3,21 +3,22 @@ import { MainLayout } from "../../layouts/mainLayout";
 import { Divider } from "antd";
 import {
   Button,
+  AnalyticalTable,
   Table,
   TableColumn,
   TableRow,
   TableCell,
   Label,
   Title,
-  MessageBox,
+  FlexBox,
 } from "@ui5/webcomponents-react";
 import styles from "./TodolistPage.module.css";
 import { useSelector, useAppDispatch } from "../../redux/hooks";
-import { getTodolist, delTodolist } from "../../redux/todolist/slice";
+import { getTodolist } from "../../redux/todolist/slice";
 import { Container } from "../../components/styles/main";
 import { DialogComponent } from "../../components/diglog";
 import { Pagination } from "../../components/Pagination";
-import { ExportButon } from "../../components";
+import { DeleteMessageBox, ExportButon } from "../../components";
 
 let PageSize = 5;
 
@@ -28,6 +29,7 @@ export const TodolistPage: React.FC = () => {
   const [title, setTitle] = useState("");
   const [option, setOption] = useState("");
   const [dialogStatus, setDialogStatus] = useState(false);
+  const [messageStatus, setMessageStatus] = useState(false);
   const [formData, setFormData] = useState({
     id: null,
     todos: "",
@@ -35,7 +37,7 @@ export const TodolistPage: React.FC = () => {
     category: "",
     EstEndDate: "",
     trustee: [],
-    phone: 0,
+    phone: "",
     enabled: true,
     username: "",
   });
@@ -86,10 +88,10 @@ export const TodolistPage: React.FC = () => {
       name: "trustee",
       type: "checkbox",
       options: [
-        { label: "Jack", value: "jack" },
-        { label: "Vincent", value: "vincent" },
-        { label: "Ruby", value: "ruby" },
-        { label: "Kent", value: "kent" },
+        { label: "Jack", checked: false },
+        { label: "Vincent", checked: false },
+        { label: "Ruby", checked: false },
+        { label: "Kent", checked: false },
       ],
       required: false,
       // pattern: /^[A-Za-z]+$/i,
@@ -99,10 +101,10 @@ export const TodolistPage: React.FC = () => {
       label: "電話號碼",
       name: "phone",
       placeholder: "請輸入電話號碼",
-      type: "number",
+      type: "input",
       required: "true",
-      min: 2,
-      max: 5,
+      pattern: /^09\d{2}(\d{6}|-\d{3}-\d{3})+$/i,
+      patternMsg: "請輸入正確格式",
     },
     {
       label: "啟動與否",
@@ -119,20 +121,6 @@ export const TodolistPage: React.FC = () => {
     return dataSource.slice(firstPageIndex, lastPageIndex);
   }, [currentPage, dataSource]);
 
-  // 生命週期初始化階段
-  useEffect(() => {
-    if (jwt) {
-      dispatch(getTodolist());
-    }
-  }, []);
-
-  const sourceLabel = [
-    { name: "ID" },
-    { name: "待辦事項" },
-    { name: "備註" },
-    { name: "建立人員" },
-  ];
-
   // 分頁元件: 只有dialogStatus變更才會重新渲染
   const DialogComponentMemo = useMemo(
     () => (
@@ -142,12 +130,69 @@ export const TodolistPage: React.FC = () => {
         isOpen={dialogStatus}
         onChangeStatus={setDialogStatus}
         formData={formData}
-        // setFormData={setFormData}
         fieldName={fieldName}
       ></DialogComponent>
     ),
     [dialogStatus]
   );
+
+  useEffect(() => {
+    if (jwt) {
+      dispatch(getTodolist());
+    }
+  }, []);
+
+  const sourceLabel = [
+    { Header: "ID", accessor: "id", width: 50 },
+    {
+      Header: "優先順序",
+      accessor: "category",
+      width: 100,
+      disableFilters: false,
+      disableGroupBy: true,
+      disableSortBy: false,
+    },
+    { Header: "預計完成日", accessor: "EstEndDate", width: 150 },
+    { Header: "待辦事項", accessor: "todos", width: 200 },
+    { Header: "備註", accessor: "remarks", width: 100 },
+    { Header: "建立人員", accessor: "username", width: 150 },
+    {
+      Header: "功能",
+      accessor: ".",
+      width: 100,
+      disableFilters: true,
+      disableGroupBy: true,
+      disableResizing: true,
+      disableSortBy: true,
+      id: "actions",
+      Cell: (instance) => {
+        const { row } = instance;
+        return (
+          <FlexBox>
+            <Button
+              design="Positive"
+              icon="edit"
+              style={{ marginRight: "5px" }}
+              onClick={() => {
+                setTitle("編輯待辦事項");
+                setDialogStatus(true);
+                setOption("edit");
+                setFormData(row.original);
+              }}
+            ></Button>
+            <Button
+              design="Negative"
+              icon="delete"
+              onClick={async () => {
+                setMessageStatus(true);
+                setFormData(row.original);
+              }}
+            ></Button>
+          </FlexBox>
+        );
+      },
+    },
+  ];
 
   return (
     <MainLayout>
@@ -164,7 +209,6 @@ export const TodolistPage: React.FC = () => {
             setTitle("新增待辦事項");
             setDialogStatus(true);
             setOption("add");
-            // 每次進入對話框時清空欄位
             setFormData({
               id: null,
               todos: "",
@@ -172,7 +216,7 @@ export const TodolistPage: React.FC = () => {
               category: "",
               EstEndDate: "",
               trustee: [],
-              phone: 0,
+              phone: "",
               enabled: true,
               username: formData.username,
             });
@@ -181,91 +225,89 @@ export const TodolistPage: React.FC = () => {
         {/* 匯出元件 */}
         <ExportButon dataSource={dataSource} sourceLabel={sourceLabel} />
         <br />
-        <Table
-          columns={
-            <>
-              <TableColumn minWidth={100}>
-                <Label>ID</Label>
-              </TableColumn>
-              <TableColumn minWidth={100}>
-                <Label>優先順序</Label>
-              </TableColumn>
-              <TableColumn>
-                <Label>預計完成日</Label>
-              </TableColumn>
-              <TableColumn minWidth={800}>
-                <Label>待辦事項</Label>
-              </TableColumn>
-              <TableColumn minWidth={600}>
-                <Label>備註</Label>
-              </TableColumn>
-              <TableColumn>
-                <Label>建立人員</Label>
-              </TableColumn>
-              <TableColumn>
-                <Label>功能</Label>
-              </TableColumn>
-            </>
-          }
-        >
-          {currentTableData.map((e, idx) => (
-            <TableRow key={idx}>
-              <TableCell>
-                <Label>{e.id}</Label>
-              </TableCell>
-              <TableCell>
-                <Label>{e.category}</Label>
-              </TableCell>
-              <TableCell>
-                <Label>{e.EstEndDate}</Label>
-              </TableCell>
-              <TableCell>
-                <Label>{e.todos}</Label>
-              </TableCell>
-              <TableCell>
-                <Label>{e.remarks}</Label>
-              </TableCell>
-              <TableCell>
-                <Label>{e.username}</Label>
-              </TableCell>
-              <TableCell>
-                <div>
-                  {/* 編輯功能 */}
-                  <Button
-                    design="Positive"
-                    icon="edit"
-                    style={{ marginRight: "5px" }}
-                    onClick={() => {
-                      setTitle("編輯待辦事項");
-                      setDialogStatus(true);
-                      setOption("edit");
-                      setFormData({
-                        id: e.id,
-                        todos: e.todos,
-                        remarks: e.remarks,
-                        category: e.category,
-                        EstEndDate: e.EstEndDate,
-                        trustee: e.trustee,
-                        phone: e.phone,
-                        enabled: e.enabled,
-                        username: e.username,
-                      });
-                    }}
-                  ></Button>
-                  {/* 刪除功能 */}
-                  <Button
-                    design="Negative"
-                    icon="delete"
-                    onClick={async () => {
-                      await dispatch(delTodolist(e.id));
-                      dispatch(getTodolist());
-                    }}
-                  ></Button>
-                </div>
-              </TableCell>
-            </TableRow>
+        <AnalyticalTable
+          columns={sourceLabel}
+          data={currentTableData}
+          filterable
+          rowHeight={40}
+          selectionMode="MultiSelect"
+        />
+        {/* 一般表格 */}
+        {/* <Table
+          columns={sourceLabel.map((item, idx) => (
+            <TableColumn minWidth={item.width} key={idx}>
+              <Label>{item.Header}</Label>
+            </TableColumn>
           ))}
-        </Table>
+        >
+          {currentTableData.map((item, idx) => {
+            return (
+              <TableRow key={idx}>
+                <TableCell>
+                  <Label>{item.id}</Label>
+                </TableCell>
+                <TableCell>
+                  <Label>{item.category}</Label>
+                </TableCell>
+                <TableCell>
+                  <Label>{item.EstEndDate}</Label>
+                </TableCell>
+                <TableCell>
+                  <Label>{item.todos}</Label>
+                </TableCell>
+                <TableCell>
+                  <Label>{item.remarks}</Label>
+                </TableCell>
+                <TableCell>
+                  <Label>{item.username}</Label>
+                </TableCell>
+                <TableCell>
+                  <div>
+                    <Button
+                      design="Positive"
+                      icon="edit"
+                      style={{ marginRight: "5px" }}
+                      onClick={() => {
+                        setTitle("編輯待辦事項");
+                        setDialogStatus(true);
+                        setOption("edit");
+                        setFormData({
+                          id: item.id,
+                          todos: item.todos,
+                          remarks: item.remarks,
+                          category: item.category,
+                          EstEndDate: item.EstEndDate,
+                          trustee: item.trustee,
+                          phone: item.phone,
+                          enabled: item.enabled,
+                          username: item.username,
+                        });
+                      }}
+                    ></Button>
+                    <Button
+                      design="Negative"
+                      icon="delete"
+                      onClick={async () => {
+                        setMessageStatus(true);
+                        setFormData({
+                          id: item.id,
+                          todos: item.todos,
+                          remarks: item.remarks,
+                          category: item.category,
+                          EstEndDate: item.EstEndDate,
+                          trustee: item.trustee,
+                          phone: item.phone,
+                          enabled: item.enabled,
+                          username: item.username,
+                        });
+                      }}
+                    ></Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </Table> */}
         {/* Dialog Component */}
         <>{DialogComponentMemo}</>
         {/* Pagination Component  */}
@@ -278,14 +320,11 @@ export const TodolistPage: React.FC = () => {
           onPageChange={(page: number) => setCurrentPage(page)}
         />
         {/* 提示視窗 */}
-        <MessageBox
-          onAfterOpen={function noRefCheck() {}}
-          onBeforeClose={function noRefCheck() {}}
-          onBeforeOpen={function noRefCheck() {}}
-          onClose={function noRefCheck() {}}
-        >
-          Press "Escape" to close the MessageBox.
-        </MessageBox>
+        <DeleteMessageBox
+          isOpen={messageStatus}
+          onChangeStatus={setMessageStatus}
+          data={formData}
+        />
       </Container>
     </MainLayout>
   );

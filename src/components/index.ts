@@ -14,3 +14,4 @@ export * from "./checkOutCard";
 export * from "./diglog";
 export * from "./Pagination";
 export * from "./exportBtn";
+export * from "./MessageBox";
