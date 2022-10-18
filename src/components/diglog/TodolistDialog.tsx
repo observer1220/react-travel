@@ -66,10 +66,9 @@ export const DialogComponent: React.FC<PropsType> = ({
   } = useForm({
     defaultValues: formData,
   });
-  const [CheckboxList, setCheckboxList] = useState([]);
 
-  // console.log(formData);
   useEffect(() => {
+    console.log(formData);
     reset(formData);
   }, [formData, reset]);
 
@@ -159,26 +158,42 @@ export const DialogComponent: React.FC<PropsType> = ({
             )}
             {/* 下拉選單 */}
             {item.type === "select" && (
-              <Controller
-                control={control}
-                name={item.name}
-                rules={{ required: item.required }}
-                render={({ field }) => (
-                  <Select
-                    {...field}
-                    onChange={(event) => {
-                      // console.log(event.detail.selectedOption.dataset.id);
-                      field.onChange(event.detail.selectedOption.dataset.id);
-                    }}
-                  >
-                    {item.options.map((element, idx) => (
-                      <Option key={idx} data-id={element.value}>
-                        {element.label}
-                      </Option>
-                    ))}
-                  </Select>
-                )}
-              />
+              <select
+                {...register(item.name, {
+                  required: item.required,
+                })}
+                placeholder={item.placeholder}
+                style={{ height: "34px", minWidth: "60px" }}
+              >
+                {item.options.map((element, idx) => (
+                  <option key={idx} value={element.value}>
+                    {element.label}
+                  </option>
+                ))}
+              </select>
+              // 編輯時資料無法回填...
+              // <Controller
+              //   control={control}
+              //   name={item.name}
+              //   rules={{ required: item.required }}
+              //   render={({ field: { onChange, name } }) => {
+              //     return (
+              //       <Select
+              //         {...register(name)}
+              //         placeholder={item.placeholder}
+              //         onChange={(event) => {
+              //           onChange(event.detail.selectedOption.dataset.id);
+              //         }}
+              //       >
+              //         {item.options.map((element, idx) => (
+              //           <Option key={idx} data-id={element.value}>
+              //             {element.label}
+              //           </Option>
+              //         ))}
+              //       </Select>
+              //     );
+              //   }}
+              // />
             )}
             {/* 日期選單 */}
             {item.type === "datepicker" && (
@@ -207,13 +222,13 @@ export const DialogComponent: React.FC<PropsType> = ({
                       key={idx}
                       control={control}
                       name={fieldName}
-                      render={({ field }) => (
+                      render={({ field: { onChange, value } }) => (
                         <CheckBox
                           text={element.label}
                           onChange={(event: any) => {
-                            field.onChange(event.target.text);
-                            // console.log(field.value);
+                            onChange(event.target.checked);
                           }}
+                          checked={value}
                         />
                       )}
                     />

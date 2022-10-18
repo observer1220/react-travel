@@ -53,7 +53,7 @@ export const TodolistPage: React.FC = () => {
         { label: "中", value: "中" },
         { label: "低", value: "低" },
       ],
-      required: false,
+      required: true,
     },
     {
       label: "預計完成日",

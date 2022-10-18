@@ -2,31 +2,48 @@
   "posts": [
     {
       "todos": "SAP會議",
-      "remarks": "Library框架",
+      "remarks": "library",
       "category": "高",
       "EstEndDate": "2022年10月12日",
-      "username": "observer1220@gmail.com",
+      "trustee": [
+        null,
+        true,
+        null,
+        true
+      ],
+      "phone": "2",
+      "enabled": true,
+      "username": "duck@gmail.com",
       "id": 4
     },
     {
       "todos": "做家事",
-      "remarks": "擦玻璃",
+      "remarks": "glass",
       "category": "低",
       "EstEndDate": "2022年10月14日",
-      "username": "observer1220@gmail.com",
+      "trustee": [
+        true,
+        "Vincent",
+        true,
+        "Kent"
+      ],
+      "phone": "2",
+      "enabled": true,
+      "username": "duck@gmail.com",
       "id": 5
     },
     {
-      "todos": "在家煮晚餐",
-      "remarks": "curry",
-      "category": "低",
-      "EstEndDate": "2022年10月21日",
-      "trustee": [
-        null,
-        "Vincent",
-        "Ruby",
-        "Kent"
-      ],
+      "todos": "123",
+      "remarks": "test",
+      "category": "中",
+      "EstEndDate": "2022年10月19日",
+      "trustee": {
+        "0": true,
+        "1": false,
+        "2": false,
+        "3": true,
+        "Jack": true
+      },
       "phone": "2",
       "enabled": true,
       "username": "duck@gmail.com",
