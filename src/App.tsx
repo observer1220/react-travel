@@ -12,6 +12,7 @@ import {
   TodolistPage,
   ProcessPendingPage,
   ZodiacPage,
+  ChartsPage,
 } from "./pages";
 import { Navigate } from "react-router-dom";
 import { useSelector, useAppDispatch } from "./redux/hooks";
@@ -110,6 +111,14 @@ function App() {
               element={
                 <PrivateRoute>
                   <ProcessPendingPage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/charts"
+              element={
+                <PrivateRoute>
+                  <ChartsPage />
                 </PrivateRoute>
               }
             />

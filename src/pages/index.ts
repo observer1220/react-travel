@@ -8,3 +8,4 @@ export * from "./placeOrder";
 export * from "./todolist";
 export * from "./zodiac";
 export * from "./processPending/ProcessPending";
+export * from "./charts";

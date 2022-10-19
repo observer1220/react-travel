@@ -13,6 +13,8 @@ import {
   CheckBox,
   Select,
   Option,
+  ObjectStatus,
+  Icon,
 } from "@ui5/webcomponents-react";
 import {
   addTodolist,
@@ -22,6 +24,7 @@ import {
 import { Controller, useForm } from "react-hook-form";
 import jwt_decode, { JwtPayload as DefaultJwtPayload } from "jwt-decode";
 import { useEffect } from "react";
+import { Badge } from "antd";
 
 interface JwtPayload extends DefaultJwtPayload {
   username: string;
@@ -67,12 +70,12 @@ export const DialogComponent: React.FC<PropsType> = ({
   });
 
   useEffect(() => {
-    console.log(formData);
+    // console.log(formData);
     reset(formData);
   }, [formData, reset]);
 
   const onSubmit = handleSubmit(async (data: any) => {
-    console.log(data);
+    // console.log(data);
 
     if (jwt) {
       const token = jwt_decode<JwtPayload>(jwt);
@@ -89,7 +92,7 @@ export const DialogComponent: React.FC<PropsType> = ({
     onChangeStatus(false);
     dispatch(getTodolist());
   });
-
+  let ErrorList = Object.keys(errors);
   return (
     <Dialog
       style={{ width: "30%" }}
@@ -103,10 +106,30 @@ export const DialogComponent: React.FC<PropsType> = ({
       }
       footer={
         <Bar
+          startContent={
+            <>
+              {ErrorList.length > 0 ? (
+                <ObjectStatus
+                  active
+                  inverted
+                  state="Error"
+                  children={
+                    <span style={{ fontSize: "12px" }}>
+                      <strong>
+                        共有
+                        {ErrorList.length}
+                        處錯誤
+                      </strong>
+                    </span>
+                  }
+                />
+              ) : null}
+            </>
+          }
           endContent={
             <>
               <Button
-                onClick={async () => {
+                onClick={() => {
                   onSubmit();
                 }}
               >
@@ -170,7 +193,7 @@ export const DialogComponent: React.FC<PropsType> = ({
                   </option>
                 ))}
               </select>
-              // 編輯時資料無法回填...
+              // 下拉選單的編輯功能資料無法回填
               // <Controller
               //   control={control}
               //   name={item.name}

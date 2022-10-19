@@ -23,23 +23,29 @@ export const ExportButon: React.FC<PropsType> = ({
     //在檔案中新增工作表 參數放自訂名稱
     const sheet = workbook.addWorksheet(Today);
 
-    let outterArr: any = [];
-    let innerArr: any = [];
+    let rows: any = [];
+    let column: any = [];
+
     dataSource.forEach((item: any) => {
-      // 這裡可以改用參數
-      innerArr = [item.orderType, item.todos, item.remarks, item.username];
-      outterArr.push(innerArr);
-      return innerArr;
+      column = [
+        item.id,
+        item.category,
+        item.EstEndDate,
+        item.todos,
+        item.remarks,
+        item.username,
+        item.function,
+      ];
+      rows.push(column);
     });
-    // console.log(dataSource);
 
     // 在工作表指定位置、格式並用columsn與rows屬性填寫內容從A1開始
     // 表格內看不到的，算是key值，讓你之後想要針對這個table去做額外設定的時候，可以指定到這個table
     sheet.addTable({
-      name: "",
+      name: "table",
       ref: "A1",
       columns: sourceLabel,
-      rows: outterArr,
+      rows: rows,
     });
 
     workbook.xlsx.writeBuffer().then((content) => {

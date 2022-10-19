@@ -1,14 +1,9 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { MainLayout } from "../../layouts/mainLayout";
 import { Divider } from "antd";
 import {
   Button,
   AnalyticalTable,
-  Table,
-  TableColumn,
-  TableRow,
-  TableCell,
-  Label,
   Title,
   FlexBox,
 } from "@ui5/webcomponents-react";
@@ -19,8 +14,7 @@ import { Container } from "../../components/styles/main";
 import { DialogComponent } from "../../components/diglog";
 import { Pagination } from "../../components/Pagination";
 import { DeleteMessageBox, ExportButon } from "../../components";
-
-let PageSize = 5;
+import { AnalyticalTableHooks } from "@ui5/webcomponents-react";
 
 export const TodolistPage: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -41,6 +35,7 @@ export const TodolistPage: React.FC = () => {
     enabled: true,
     username: "",
   });
+  const [PageSize, setPageSize] = useState(5);
 
   // 對話框的種類
   const [fieldName] = useState([
@@ -143,28 +138,55 @@ export const TodolistPage: React.FC = () => {
   }, []);
 
   const sourceLabel = [
-    { Header: "ID", accessor: "id", width: 50 },
+    { id: "id", Header: "ID", accessor: "id", name: "id", width: 50 },
     {
+      id: "category",
       Header: "優先順序",
       accessor: "category",
+      name: "category",
       width: 100,
-      disableFilters: false,
-      disableGroupBy: true,
-      disableSortBy: false,
+      // disableFilters: false,
+      // disableGroupBy: true,
+      // disableSortBy: false,
     },
-    { Header: "預計完成日", accessor: "EstEndDate", width: 150 },
-    { Header: "待辦事項", accessor: "todos", width: 200 },
-    { Header: "備註", accessor: "remarks", width: 100 },
-    { Header: "建立人員", accessor: "username", width: 150 },
     {
+      id: "EstEndDate",
+      Header: "預計完成日",
+      accessor: "EstEndDate",
+      name: "EstEndDate",
+      width: 150,
+    },
+    {
+      id: "todos",
+      Header: "待辦事項",
+      accessor: "todos",
+      name: "todos",
+      width: 200,
+    },
+    {
+      id: "remarks",
+      Header: "備註",
+      accessor: "remarks",
+      name: "remarks",
+      width: 100,
+    },
+    {
+      id: "username",
+      Header: "建立人員",
+      accessor: "username",
+      name: "username",
+      width: 150,
+    },
+    {
+      id: "function",
       Header: "功能",
       accessor: ".",
+      name: "function",
       width: 100,
       disableFilters: true,
       disableGroupBy: true,
       disableResizing: true,
       disableSortBy: true,
-      id: "actions",
       Cell: (instance) => {
         const { row } = instance;
         return (
@@ -222,92 +244,32 @@ export const TodolistPage: React.FC = () => {
             });
           }}
         />
-        {/* 匯出元件 */}
+        {/* Export Component */}
         <ExportButon dataSource={dataSource} sourceLabel={sourceLabel} />
-        <br />
+        {/* 表格元件 */}
         <AnalyticalTable
+          className="ui5-content-density-compact"
           columns={sourceLabel}
           data={currentTableData}
           filterable
+          groupable
           rowHeight={40}
+          // 無限滾輪
+          // infiniteScroll={true}
+          // 複選功能
+          tableHooks={[AnalyticalTableHooks.useIndeterminateRowSelection()]}
+          reactTableOptions={{ selectSubRows: true }}
           selectionMode="MultiSelect"
+          onRowSelect={async (event) => {
+            // console.log(event?.detail);
+            if (event?.detail.allRowsSelected) {
+              event.detail.selectedFlatRows.forEach((element) => {
+                // console.log(element);
+                // element.isSelected = true;
+              });
+            }
+          }}
         />
-        {/* 一般表格 */}
-        {/* <Table
-          columns={sourceLabel.map((item, idx) => (
-            <TableColumn minWidth={item.width} key={idx}>
-              <Label>{item.Header}</Label>
-            </TableColumn>
-          ))}
-        >
-          {currentTableData.map((item, idx) => {
-            return (
-              <TableRow key={idx}>
-                <TableCell>
-                  <Label>{item.id}</Label>
-                </TableCell>
-                <TableCell>
-                  <Label>{item.category}</Label>
-                </TableCell>
-                <TableCell>
-                  <Label>{item.EstEndDate}</Label>
-                </TableCell>
-                <TableCell>
-                  <Label>{item.todos}</Label>
-                </TableCell>
-                <TableCell>
-                  <Label>{item.remarks}</Label>
-                </TableCell>
-                <TableCell>
-                  <Label>{item.username}</Label>
-                </TableCell>
-                <TableCell>
-                  <div>
-                    <Button
-                      design="Positive"
-                      icon="edit"
-                      style={{ marginRight: "5px" }}
-                      onClick={() => {
-                        setTitle("編輯待辦事項");
-                        setDialogStatus(true);
-                        setOption("edit");
-                        setFormData({
-                          id: item.id,
-                          todos: item.todos,
-                          remarks: item.remarks,
-                          category: item.category,
-                          EstEndDate: item.EstEndDate,
-                          trustee: item.trustee,
-                          phone: item.phone,
-                          enabled: item.enabled,
-                          username: item.username,
-                        });
-                      }}
-                    ></Button>
-                    <Button
-                      design="Negative"
-                      icon="delete"
-                      onClick={async () => {
-                        setMessageStatus(true);
-                        setFormData({
-                          id: item.id,
-                          todos: item.todos,
-                          remarks: item.remarks,
-                          category: item.category,
-                          EstEndDate: item.EstEndDate,
-                          trustee: item.trustee,
-                          phone: item.phone,
-                          enabled: item.enabled,
-                          username: item.username,
-                        });
-                      }}
-                    ></Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            );
-          })}
-        </Table> */}
         {/* Dialog Component */}
         <>{DialogComponentMemo}</>
         {/* Pagination Component  */}
@@ -316,10 +278,11 @@ export const TodolistPage: React.FC = () => {
           currentPage={currentPage}
           totalCount={dataSource.length}
           pageSize={PageSize}
+          setPageSize={setPageSize}
           siblingCount={1}
           onPageChange={(page: number) => setCurrentPage(page)}
         />
-        {/* 提示視窗 */}
+        {/* MessageBox Component */}
         <DeleteMessageBox
           isOpen={messageStatus}
           onChangeStatus={setMessageStatus}
