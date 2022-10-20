@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { MainLayout } from "../../layouts/mainLayout";
 import { Divider } from "antd";
 import {
@@ -13,7 +13,11 @@ import { getTodolist } from "../../redux/todolist/slice";
 import { Container } from "../../components/styles/main";
 import { DialogComponent } from "../../components/diglog";
 import { Pagination } from "../../components/Pagination";
-import { DeleteMessageBox, ExportButon } from "../../components";
+import {
+  DeleteMessageBox,
+  ExportButon,
+  SideNavigationComponent,
+} from "../../components";
 import { AnalyticalTableHooks } from "@ui5/webcomponents-react";
 
 export const TodolistPage: React.FC = () => {
@@ -36,6 +40,7 @@ export const TodolistPage: React.FC = () => {
     username: "",
   });
   const [PageSize, setPageSize] = useState(5);
+  const [PatchDelete, setPatchDelete] = useState(false);
 
   // 對話框的種類
   const [fieldName] = useState([
@@ -87,6 +92,8 @@ export const TodolistPage: React.FC = () => {
         { label: "Vincent", checked: false },
         { label: "Ruby", checked: false },
         { label: "Kent", checked: false },
+        { label: "Susan", checked: false },
+        { label: "Kimberly", checked: false },
       ],
       required: false,
       // pattern: /^[A-Za-z]+$/i,
@@ -218,6 +225,7 @@ export const TodolistPage: React.FC = () => {
 
   return (
     <MainLayout>
+      <SideNavigationComponent />
       <Container>
         <Divider orientation="left">
           <Title level="H2" style={{ color: "white" }}>
@@ -246,6 +254,8 @@ export const TodolistPage: React.FC = () => {
         />
         {/* Export Component */}
         <ExportButon dataSource={dataSource} sourceLabel={sourceLabel} />
+        {PatchDelete ? <Button design="Negative">批次刪除</Button> : null}
+
         {/* 表格元件 */}
         <AnalyticalTable
           className="ui5-content-density-compact"
@@ -261,12 +271,17 @@ export const TodolistPage: React.FC = () => {
           reactTableOptions={{ selectSubRows: true }}
           selectionMode="MultiSelect"
           onRowSelect={async (event) => {
-            // console.log(event?.detail);
             if (event?.detail.allRowsSelected) {
+              // console.log(event?.detail.allRowsSelected);
+              setPatchDelete(event?.detail.allRowsSelected);
+
               event.detail.selectedFlatRows.forEach((element) => {
-                // console.log(element);
+                // 批次刪除: 取得所有欄位的ID，再將
+                // console.log(element.id);
                 // element.isSelected = true;
               });
+            } else {
+              setPatchDelete(false);
             }
           }}
         />

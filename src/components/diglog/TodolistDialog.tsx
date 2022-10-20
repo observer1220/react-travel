@@ -24,7 +24,7 @@ import {
 import { Controller, useForm } from "react-hook-form";
 import jwt_decode, { JwtPayload as DefaultJwtPayload } from "jwt-decode";
 import { useEffect } from "react";
-import { Badge } from "antd";
+import "@ui5/webcomponents/dist/features/InputElementsFormSupport.js";
 
 interface JwtPayload extends DefaultJwtPayload {
   username: string;
@@ -95,7 +95,9 @@ export const DialogComponent: React.FC<PropsType> = ({
   let ErrorList = Object.keys(errors);
   return (
     <Dialog
-      style={{ width: "30%" }}
+      // style={{ width: "100%" }}
+      draggable
+      resizable
       open={isOpen}
       header={
         <Bar>
@@ -180,43 +182,46 @@ export const DialogComponent: React.FC<PropsType> = ({
             )}
             {/* 下拉選單 */}
             {item.type === "select" && (
-              <select
-                {...register(item.name, {
-                  required: item.required,
-                })}
-                placeholder={item.placeholder}
-                style={{ height: "34px", minWidth: "80px" }}
-              >
-                {item.options.map((element, idx) => (
-                  <option key={idx} value={element.value}>
-                    {element.label}
-                  </option>
-                ))}
-              </select>
+              // <select
+              //   {...register(item.name, {
+              //     required: item.required,
+              //   })}
+              //   placeholder={item.placeholder}
+              //   style={{ height: "34px", minWidth: "100px" }}
+              // >
+              //   {item.options.map((element, idx) => (
+              //     <option key={idx} value={element.value}>
+              //       {element.label}
+              //     </option>
+              //   ))}
+              // </select>
               // 下拉選單的編輯功能資料無法回填
-              // <Controller
-              //   control={control}
-              //   name={item.name}
-              //   rules={{ required: item.required }}
-              //   render={({ field: { onChange, name, value, ref } }) => {
-              //     return (
-              //       <Select
-              //         {...register(item.name)}
-              //         placeholder={item.placeholder}
-              //         onChange={(event) => {
-              //           onChange(event.detail.selectedOption.dataset.id);
-              //         }}
-              //       >
-              //         {item.options.map((element, idx) => (
-              //           <Option key={idx} data-id={element.value}>
-              //             {element.label}
-              //           </Option>
-              //         ))}
-              //         inputRef={ref}
-              //       </Select>
-              //     );
-              //   }}
-              // />
+              <Controller
+                control={control}
+                name={item.name}
+                rules={{ required: item.required }}
+                render={({ field: { onChange, name, value } }) => {
+                  return (
+                    <Select
+                      {...register(item.name)}
+                      placeholder={item.placeholder}
+                      onChange={(event) =>
+                        onChange(event.detail.selectedOption.dataset.id)
+                      }
+                    >
+                      {item.options.map((element, idx) => (
+                        <Option
+                          key={idx}
+                          data-id={element.value}
+                          selected={value}
+                        >
+                          {element.label}
+                        </Option>
+                      ))}
+                    </Select>
+                  );
+                }}
+              />
             )}
             {/* 日期選單 */}
             {item.type === "datepicker" && (
@@ -252,7 +257,7 @@ export const DialogComponent: React.FC<PropsType> = ({
                             onChange(event.target.checked);
                           }}
                           checked={value}
-                          valueState="Success"
+                          valueState="Information"
                         />
                       )}
                     />
@@ -278,13 +283,16 @@ export const DialogComponent: React.FC<PropsType> = ({
                 key={idx}
                 control={control}
                 name={item.name}
-                render={({ field }) => (
+                render={({ field: { onChange, value, name } }) => (
                   <Switch
+                    className="ui5-content-density-compact"
+                    design="Graphical"
                     {...register(item.name)}
-                    {...field}
                     onChange={(event) => {
-                      field.onChange(event.target.checked);
+                      // console.log(event.target.checked);
+                      onChange(event.target.checked);
                     }}
+                    checked={value}
                   />
                 )}
               />

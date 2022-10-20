@@ -32,8 +32,8 @@ export const ChartsPage: React.FC = () => {
             // ref={{
             //   current: "[Circular]",
             // }}
-            onClick={() => {
-              console.log("哈囉");
+            onClick={(e) => {
+              console.log(e);
             }}
           >
             菜單
@@ -44,8 +44,8 @@ export const ChartsPage: React.FC = () => {
             //     // current: {['Circular']},
             //   }
             // }
-            onItemClick={() => {
-              console.log("讚");
+            onItemClick={(event) => {
+              console.log(event);
             }}
           >
             <MenuItem icon="add-document" text="New File" />

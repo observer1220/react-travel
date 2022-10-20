@@ -16,13 +16,13 @@ const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
 root.render(
-  <React.StrictMode>
-    <Provider store={rootStore.store}>
-      <PersistGate persistor={rootStore.persistor}>
-        <ThemeProvider>
-          <App />
-        </ThemeProvider>
-      </PersistGate>
-    </Provider>
-  </React.StrictMode>
+  // <React.StrictMode>
+  <Provider store={rootStore.store}>
+    <PersistGate persistor={rootStore.persistor}>
+      <ThemeProvider>
+        <App />
+      </ThemeProvider>
+    </PersistGate>
+  </Provider>
+  // </React.StrictMode>
 );
