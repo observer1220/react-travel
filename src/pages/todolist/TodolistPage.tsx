@@ -9,7 +9,7 @@ import {
 } from "@ui5/webcomponents-react";
 import styles from "./TodolistPage.module.css";
 import { useSelector, useAppDispatch } from "../../redux/hooks";
-import { getTodolist } from "../../redux/todolist/slice";
+import { delTodolist, getTodolist } from "../../redux/todolist/slice";
 import { Container } from "../../components/styles/main";
 import { DialogComponent } from "../../components/diglog";
 import { Pagination } from "../../components/Pagination";
@@ -40,7 +40,10 @@ export const TodolistPage: React.FC = () => {
     username: "",
   });
   const [PageSize, setPageSize] = useState(5);
-  const [PatchDelete, setPatchDelete] = useState(false);
+  const [PatchDelete, setPatchDelete] = useState({
+    patch: [],
+    open: false,
+  });
 
   // 對話框的種類
   const [fieldName] = useState([
@@ -189,7 +192,7 @@ export const TodolistPage: React.FC = () => {
       Header: "功能",
       accessor: ".",
       name: "function",
-      width: 100,
+      width: 120,
       disableFilters: true,
       disableGroupBy: true,
       disableResizing: true,
@@ -198,6 +201,17 @@ export const TodolistPage: React.FC = () => {
         const { row } = instance;
         return (
           <FlexBox>
+            <Button
+              design="Attention"
+              icon="copy"
+              style={{ marginRight: "5px" }}
+              onClick={() => {
+                setTitle("複製待辦事項");
+                setDialogStatus(true);
+                setOption("add");
+                setFormData(row.original);
+              }}
+            ></Button>
             <Button
               design="Positive"
               icon="edit"
@@ -208,7 +222,7 @@ export const TodolistPage: React.FC = () => {
                 setOption("edit");
                 setFormData(row.original);
               }}
-            ></Button>
+            />
             <Button
               design="Negative"
               icon="delete"
@@ -216,7 +230,7 @@ export const TodolistPage: React.FC = () => {
                 setMessageStatus(true);
                 setFormData(row.original);
               }}
-            ></Button>
+            />
           </FlexBox>
         );
       },
@@ -225,85 +239,103 @@ export const TodolistPage: React.FC = () => {
 
   return (
     <MainLayout>
-      <SideNavigationComponent />
-      <Container>
-        <Divider orientation="left">
-          <Title level="H2" style={{ color: "white" }}>
-            本週待辦事項
-          </Title>
-        </Divider>
-        <Button
-          design="Positive"
-          icon="add"
-          onClick={() => {
-            setTitle("新增待辦事項");
-            setDialogStatus(true);
-            setOption("add");
-            setFormData({
-              id: null,
-              todos: "",
-              remarks: "",
-              category: "",
-              EstEndDate: "",
-              trustee: [],
-              phone: "",
-              enabled: true,
-              username: formData.username,
-            });
-          }}
-        />
-        {/* Export Component */}
-        <ExportButon dataSource={dataSource} sourceLabel={sourceLabel} />
-        {PatchDelete ? <Button design="Negative">批次刪除</Button> : null}
-
-        {/* 表格元件 */}
-        <AnalyticalTable
-          className="ui5-content-density-compact"
-          columns={sourceLabel}
-          data={currentTableData}
-          filterable
-          groupable
-          rowHeight={40}
-          // 無限滾輪
-          // infiniteScroll={true}
-          // 複選功能
-          tableHooks={[AnalyticalTableHooks.useIndeterminateRowSelection()]}
-          reactTableOptions={{ selectSubRows: true }}
-          selectionMode="MultiSelect"
-          onRowSelect={async (event) => {
-            if (event?.detail.allRowsSelected) {
-              // console.log(event?.detail.allRowsSelected);
-              setPatchDelete(event?.detail.allRowsSelected);
-
-              event.detail.selectedFlatRows.forEach((element) => {
-                // 批次刪除: 取得所有欄位的ID，再將
-                // console.log(element.id);
-                // element.isSelected = true;
+      <div style={{ display: "flex", justifyContent: "center" }}>
+        {/* <SideNavigationComponent /> */}
+        <Container>
+          <Divider orientation="left">
+            <Title level="H2" style={{ color: "white" }}>
+              本週待辦事項
+            </Title>
+          </Divider>
+          <Button
+            design="Positive"
+            icon="add"
+            onClick={() => {
+              setTitle("新增待辦事項");
+              setDialogStatus(true);
+              setOption("add");
+              setFormData({
+                id: null,
+                todos: "",
+                remarks: "",
+                category: "",
+                EstEndDate: "",
+                trustee: [],
+                phone: "",
+                enabled: true,
+                username: formData.username,
               });
-            } else {
-              setPatchDelete(false);
-            }
-          }}
-        />
-        {/* Dialog Component */}
-        <>{DialogComponentMemo}</>
-        {/* Pagination Component  */}
-        <Pagination
-          className={styles["pagination-bar"]}
-          currentPage={currentPage}
-          totalCount={dataSource.length}
-          pageSize={PageSize}
-          setPageSize={setPageSize}
-          siblingCount={1}
-          onPageChange={(page: number) => setCurrentPage(page)}
-        />
-        {/* MessageBox Component */}
-        <DeleteMessageBox
-          isOpen={messageStatus}
-          onChangeStatus={setMessageStatus}
-          data={formData}
-        />
-      </Container>
+            }}
+          />
+          {/* Export Component */}
+          <ExportButon dataSource={dataSource} sourceLabel={sourceLabel} />
+          {PatchDelete.patch.length > 1 ? (
+            <Button
+              design="Negative"
+              onClick={async () => {
+                // 這個寫法不好，一次呼叫三次API，如果一次勾100筆就會呼叫100次
+                PatchDelete.patch.forEach((id) => {
+                  dispatch(delTodolist(id));
+                });
+                // dispatch(getTodolist());
+              }}
+            >
+              批次刪除
+            </Button>
+          ) : null}
+          {/* 表格元件 */}
+          <AnalyticalTable
+            className="ui5-content-density-compact"
+            columns={sourceLabel}
+            data={currentTableData}
+            filterable
+            groupable
+            rowHeight={40}
+            // 無限滾輪
+            // infiniteScroll={true}
+            // 複選功能
+            tableHooks={[AnalyticalTableHooks.useIndeterminateRowSelection()]}
+            reactTableOptions={{ selectSubRows: true }}
+            selectionMode="MultiSelect"
+            onRowSelect={async (event) => {
+              let PatchList: any = [];
+              if (event!.detail.selectedFlatRows.length > 0) {
+                // console.log(event!.detail.selectedFlatRows.length);
+                event?.detail.selectedFlatRows.forEach((element) => {
+                  PatchList.push(element.original.id);
+                  setPatchDelete({
+                    patch: PatchList,
+                    open: true,
+                  });
+                });
+              } else {
+                setPatchDelete({
+                  patch: [],
+                  open: false,
+                });
+              }
+            }}
+          />
+          {/* Dialog Component */}
+          <>{DialogComponentMemo}</>
+          {/* Pagination Component  */}
+          <Pagination
+            className={styles["pagination-bar"]}
+            currentPage={currentPage}
+            totalCount={dataSource.length}
+            pageSize={PageSize}
+            setPageSize={setPageSize}
+            siblingCount={1}
+            onPageChange={(page: number) => setCurrentPage(page)}
+          />
+          {/* MessageBox Component */}
+          <DeleteMessageBox
+            isOpen={messageStatus}
+            onChangeStatus={setMessageStatus}
+            data={formData}
+          />
+        </Container>
+      </div>
     </MainLayout>
   );
 };

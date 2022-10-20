@@ -89,6 +89,7 @@ export const DialogComponent: React.FC<PropsType> = ({
     if (option === "edit") {
       await dispatch(editTodolist(data));
     }
+
     onChangeStatus(false);
     dispatch(getTodolist());
   });
@@ -182,46 +183,42 @@ export const DialogComponent: React.FC<PropsType> = ({
             )}
             {/* 下拉選單 */}
             {item.type === "select" && (
-              // <select
-              //   {...register(item.name, {
-              //     required: item.required,
-              //   })}
-              //   placeholder={item.placeholder}
-              //   style={{ height: "34px", minWidth: "100px" }}
-              // >
-              //   {item.options.map((element, idx) => (
-              //     <option key={idx} value={element.value}>
-              //       {element.label}
-              //     </option>
-              //   ))}
-              // </select>
+              <select
+                {...register(item.name, {
+                  required: item.required,
+                })}
+                placeholder={item.placeholder}
+                style={{ height: "34px", minWidth: "200px", outline: "none" }}
+              >
+                {item.options.map((element, idx) => (
+                  <option key={idx} value={element.value}>
+                    {element.label}
+                  </option>
+                ))}
+              </select>
               // 下拉選單的編輯功能資料無法回填
-              <Controller
-                control={control}
-                name={item.name}
-                rules={{ required: item.required }}
-                render={({ field: { onChange, name, value } }) => {
-                  return (
-                    <Select
-                      {...register(item.name)}
-                      placeholder={item.placeholder}
-                      onChange={(event) =>
-                        onChange(event.detail.selectedOption.dataset.id)
-                      }
-                    >
-                      {item.options.map((element, idx) => (
-                        <Option
-                          key={idx}
-                          data-id={element.value}
-                          selected={value}
-                        >
-                          {element.label}
-                        </Option>
-                      ))}
-                    </Select>
-                  );
-                }}
-              />
+              // <Controller
+              //   control={control}
+              //   name={item.name}
+              //   rules={{ required: item.required }}
+              //   render={({ field }) => {
+              //     return (
+              //       <Select
+              //         {...register(item.name)}
+              //         name={item.name}
+              //         placeholder={item.placeholder}
+              //         onChange={(event) => {
+              //           field.onChange(event.detail.selectedOption.dataset.id);
+              //         }}
+              //         children={item.options.map((element, idx) => (
+              //           <Option key={idx} data-id={element.value} {...field}>
+              //             {element.label}
+              //           </Option>
+              //         ))}
+              //       ></Select>
+              //     );
+              //   }}
+              // />
             )}
             {/* 日期選單 */}
             {item.type === "datepicker" && (
@@ -231,8 +228,8 @@ export const DialogComponent: React.FC<PropsType> = ({
                 rules={{ required: item.required }}
                 render={({ field }) => (
                   <DatePicker
-                    placeholder={item.placeholder}
                     {...field}
+                    placeholder={item.placeholder}
                     onChange={(event) => {
                       field.onChange(event.detail.value);
                     }}

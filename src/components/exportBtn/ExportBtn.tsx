@@ -26,6 +26,7 @@ export const ExportButon: React.FC<PropsType> = ({
     let rows: any = [];
     let column: any = [];
 
+    // 資料陣列
     dataSource.forEach((item: any) => {
       column = [
         item.id,
@@ -34,10 +35,10 @@ export const ExportButon: React.FC<PropsType> = ({
         item.todos,
         item.remarks,
         item.username,
-        item.function,
       ];
       rows.push(column);
     });
+    console.log(rows);
 
     // 在工作表指定位置、格式並用columsn與rows屬性填寫內容從A1開始
     // 表格內看不到的，算是key值，讓你之後想要針對這個table去做額外設定的時候，可以指定到這個table
