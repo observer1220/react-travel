@@ -35,12 +35,12 @@ export const MessageBoxComponent: React.FC<PropsType> = ({
           onClick={async () => {
             switch (pageName) {
               case "TodoList":
-                dispatch(delTodolist(data.id));
-                dispatch(getTodolist());
+                await dispatch(delTodolist(data.id));
+                await dispatch(getTodolist());
                 break;
               case "ProcessPending":
-                dispatch(delProcessPendingList(data.id));
-                dispatch(getProcessPendingList());
+                await dispatch(delProcessPendingList(data.id));
+                await dispatch(getProcessPendingList());
                 break;
             }
           }}

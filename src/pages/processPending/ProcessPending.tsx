@@ -17,7 +17,12 @@ import { useEffect, useMemo, useState } from "react";
 import { getProcessPendingList } from "../../redux/processPending/slice";
 import jwt_decode, { JwtPayload as DefaultJwtPayload } from "jwt-decode";
 import ExcelJs from "exceljs";
-import { DialogComponent, MessageBoxComponent } from "../../components";
+import {
+  DialogComponent,
+  MessageBoxComponent,
+  MultiSearchComponent,
+} from "../../components";
+import { IField } from "../../interface/interface";
 
 interface IFormInput {
   purchaseOrderNo: any;
@@ -72,90 +77,104 @@ export const ProcessPendingPage: React.FC = () => {
   }, [currentPage, dataSource]);
 
   // 對話框欄位設定
-  const [fieldName] = useState([
+  const fieldName = useState<IField[]>([
     {
       label: "採購單號",
       placeholder: "請輸入採購單號...",
       name: "purchaseOrderNo",
       type: "input",
+      required: true,
     },
     {
       label: "採購單項次",
       placeholder: "請輸入採購單項次...",
       name: "purchaseOrderLine",
       type: "input",
+      required: true,
     },
     {
       label: "廠商代號",
       placeholder: "請輸入廠商代號...",
       name: "ManufacturerCode",
       type: "input",
+      required: true,
     },
     {
       label: "工單單別",
       placeholder: "請輸入工單單別...",
       name: "orderType",
       type: "input",
+      required: true,
     },
     {
       label: "工單單號內外徑",
       placeholder: "請輸入工單單號內外徑...",
       name: "orderNo",
       type: "input",
+      required: false,
     },
     {
       label: "品名",
       placeholder: "請輸入品名...",
       name: "ProductName",
       type: "input",
+      required: false,
     },
     {
       label: "標準內文碼",
       placeholder: "請輸入標準內文碼...",
       name: "StandardTextCode",
       type: "input",
+      required: false,
     },
     {
       label: "製程代號",
       placeholder: "請輸入製程代號...",
       name: "ProcessCode",
       type: "input",
+      required: false,
     },
     {
       label: "預計開工日",
       placeholder: "請選擇預計開工日...",
       name: "ESTStartDate",
       type: "datepicker",
+      required: false,
     },
     {
       label: "預計完成日",
       placeholder: "請選擇預計完成日...",
       name: "ESTEndDate",
       type: "datepicker",
+      required: false,
     },
     {
       label: "投入數量",
       placeholder: "請輸入投入數量...",
       name: "inputQTY",
       type: "input",
+      required: false,
     },
     {
       label: "完成數量",
       placeholder: "請輸入完成數量...",
       name: "completedQTY",
       type: "input",
+      required: false,
     },
     {
       label: "預交日期",
       placeholder: "請選擇預交日期...",
       name: "ESTDeliveryDate",
       type: "datepicker",
+      required: false,
     },
     {
       label: "領料狀態",
       placeholder: "",
       name: "pickingStatus",
       type: "switch",
+      required: false,
     },
   ]);
 
@@ -318,57 +337,9 @@ export const ProcessPendingPage: React.FC = () => {
   useEffect(() => {
     if (jwt) {
       dispatch(getProcessPendingList());
-      const token = jwt_decode<JwtPayload>(jwt);
-      // setFormData({
-      //   id: null,
-      //   todos: "",
-      //   remarks: "",
-      //   username: token.username,
-      // });
+      // const token = jwt_decode<JwtPayload>(jwt);
     }
   }, []);
-
-  // 匯出至EXCEL
-  const ExportBtn = () => {
-    let date = new Date();
-    let Today =
-      date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
-    // console.log(Today);
-
-    // 創建試算表檔案
-    const workbook = new ExcelJs.Workbook();
-
-    //在檔案中新增工作表 參數放自訂名稱
-    const sheet = workbook.addWorksheet(Today);
-
-    let outterArr: any = [];
-    let innerArr: any = [];
-    dataSource.forEach((item) => {
-      innerArr = [item.orderType, item.todos, item.remarks, item.username];
-      outterArr.push(innerArr);
-      return innerArr;
-    });
-    // console.log(dataSource);
-
-    // 在工作表指定位置、格式並用columsn與rows屬性填寫內容從A1開始
-    // 表格內看不到的，算是key值，讓你之後想要針對這個table去做額外設定的時候，可以指定到這個table
-    sheet.addTable({
-      name: "table名稱",
-      ref: "A1",
-      columns: sourceLabel,
-      rows: outterArr,
-    });
-
-    workbook.xlsx.writeBuffer().then((content) => {
-      const link = document.createElement("a");
-      const blobData = new Blob([content], {
-        type: "application/vnd.ms-excel;charset=utf-8;",
-      });
-      link.download = `${Today}.xlsx`;
-      link.href = URL.createObjectURL(blobData);
-      link.click();
-    });
-  };
 
   // 分頁元件: 只有dialogStatus及formData變更才會重新渲染
   const DialogComponentMemo = useMemo(
@@ -402,7 +373,8 @@ export const ProcessPendingPage: React.FC = () => {
         </Title>
       </Bar>
       {/* 搜尋表單 */}
-      <Form
+      <MultiSearchComponent fieldName={fieldName} />
+      {/* <Form
         columnsXL={3}
         columnsM={2}
         columnsS={1}
@@ -450,7 +422,7 @@ export const ProcessPendingPage: React.FC = () => {
             primaryCalendarType="Gregorian"
           />
         </FormItem>
-      </Form>
+      </Form> */}
       <Bar
         endContent={
           <>
@@ -461,7 +433,7 @@ export const ProcessPendingPage: React.FC = () => {
             >
               查詢
             </Button>
-            <Button style={{ margin: "0 5px" }} onClick={ExportBtn}>
+            <Button style={{ margin: "0 5px" }} onClick={() => {}}>
               匯出至Excel
             </Button>
             <Button

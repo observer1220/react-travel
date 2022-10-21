@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { MainLayout } from "../../layouts/mainLayout";
 import { Divider } from "antd";
 import {
   Button,
@@ -18,6 +17,8 @@ import {
   MessageBoxComponent,
 } from "../../components";
 import { AnalyticalTableHooks } from "@ui5/webcomponents-react";
+import { IField } from "../../interface/interface";
+import { ZodiacLayout } from "../../layouts/zodiacLayout";
 
 export const TodolistPage: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -44,8 +45,8 @@ export const TodolistPage: React.FC = () => {
     open: false,
   });
 
-  // 對話框FORM表單內容
-  const [fieldName] = useState([
+  // 對話框FORM表單內容: 資料驅動欄位生成，若填錯內容TypeScript會自動報錯
+  const [fieldName] = useState<IField[]>([
     {
       label: "優先順序",
       placeholder: "請選擇優先順序...",
@@ -64,6 +65,7 @@ export const TodolistPage: React.FC = () => {
       placeholder: "請選擇預計完成日...",
       name: "EstEndDate",
       type: "datepicker",
+      options: [],
       required: false,
     },
     {
@@ -71,6 +73,7 @@ export const TodolistPage: React.FC = () => {
       placeholder: "請輸入待辦事項...",
       name: "todos",
       type: "input",
+      options: [],
       required: false,
       minLength: 2,
       maxLength: 10,
@@ -80,13 +83,14 @@ export const TodolistPage: React.FC = () => {
       placeholder: "請輸入備註...",
       name: "remarks",
       type: "input",
-      required: false,
+      options: [],
+      required: true,
       pattern: /^[A-Za-z]+$/i,
       patternMsg: "只能輸入英文",
     },
     {
       label: "受託人",
-      // placeholder: "",
+      placeholder: "",
       name: "trustee",
       type: "checkbox",
       options: [
@@ -98,22 +102,24 @@ export const TodolistPage: React.FC = () => {
         { label: "Kimberly", checked: false },
       ],
       required: false,
-      // pattern: /^[A-Za-z]+$/i,
-      // patternMsg: "只能輸入英文",
     },
     {
       label: "電話號碼",
       name: "phone",
       placeholder: "請輸入電話號碼",
       type: "input",
-      required: "true",
+      options: [],
+      required: true,
       pattern: /^09\d{2}(\d{6}|-\d{3}-\d{3})+$/i,
       patternMsg: "請輸入正確格式",
     },
     {
       label: "啟動與否",
       name: "enabled",
+      placeholder: "",
       type: "switch",
+      options: [],
+      required: false,
     },
   ]);
 
@@ -235,8 +241,10 @@ export const TodolistPage: React.FC = () => {
   ];
 
   return (
-    <MainLayout>
-      <div style={{ display: "flex", justifyContent: "center" }}>
+    <ZodiacLayout>
+      <div
+        style={{ display: "flex", justifyContent: "center", marginTop: "50px" }}
+      >
         <Container>
           <Divider orientation="left">
             <Title level="H2" style={{ color: "white" }}>
@@ -331,6 +339,6 @@ export const TodolistPage: React.FC = () => {
           />
         </Container>
       </div>
-    </MainLayout>
+    </ZodiacLayout>
   );
 };

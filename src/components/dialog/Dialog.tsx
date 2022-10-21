@@ -124,6 +124,7 @@ export const DialogComponent: React.FC<PropsType> = ({
   let ErrorList = Object.keys(errors);
   return (
     <Dialog
+      style={{ minWidth: "30%" }}
       draggable
       resizable
       open={isOpen}
@@ -181,11 +182,21 @@ export const DialogComponent: React.FC<PropsType> = ({
         columnsXL={3}
         columnsL={1}
         columnsM={1}
-        columnsS={1}
+        columnsS={2}
         style={{ background: "#f8fcfc" }}
       >
         {fieldName.map((item, idx) => (
-          <FormItem label={item.label} key={idx}>
+          <FormItem
+            label={
+              <div>
+                {item.required === true ? (
+                  <span style={{ color: "red" }}>*</span>
+                ) : null}
+                {item.label}
+              </div>
+            }
+            key={idx}
+          >
             {/* 一般輸入框 */}
             {item.type === "input" && (
               <Input
@@ -271,7 +282,7 @@ export const DialogComponent: React.FC<PropsType> = ({
             )}
             {/* 複選框 */}
             {item.type === "checkbox" && (
-              <div style={{ display: "flex" }}>
+              <div style={{ display: "flex", flexWrap: "wrap", width: "80%" }}>
                 {item.options.map((element, idx) => {
                   const fieldName: any = `trustee[${idx}]`;
                   return (
