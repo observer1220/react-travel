@@ -14,7 +14,6 @@ import {
   Select,
   Option,
   ObjectStatus,
-  Icon,
 } from "@ui5/webcomponents-react";
 import {
   addTodolist,
@@ -25,6 +24,12 @@ import { Controller, useForm } from "react-hook-form";
 import jwt_decode, { JwtPayload as DefaultJwtPayload } from "jwt-decode";
 import { useEffect } from "react";
 import "@ui5/webcomponents/dist/features/InputElementsFormSupport.js";
+import {
+  addProcessPendingList,
+  editProcessPendingList,
+  getProcessPendingList,
+} from "../../redux/processPending/slice";
+import styles from "./Dialog.module.css";
 
 interface JwtPayload extends DefaultJwtPayload {
   username: string;
@@ -47,6 +52,7 @@ interface PropsType {
   onChangeStatus: React.Dispatch<React.SetStateAction<boolean>>;
   formData: FormType;
   fieldName: any;
+  pageName: string;
 }
 
 export const DialogComponent: React.FC<PropsType> = ({
@@ -56,6 +62,7 @@ export const DialogComponent: React.FC<PropsType> = ({
   onChangeStatus,
   formData,
   fieldName,
+  pageName,
 }) => {
   const dispatch = useAppDispatch();
   const jwt = useSelector((state) => state.user.token);
@@ -70,7 +77,6 @@ export const DialogComponent: React.FC<PropsType> = ({
   });
 
   useEffect(() => {
-    // console.log(formData);
     reset(formData);
   }, [formData, reset]);
 
@@ -82,26 +88,47 @@ export const DialogComponent: React.FC<PropsType> = ({
       data.username = token.username;
     }
 
-    //　用option跑不同的方法
     if (option === "add") {
-      await dispatch(addTodolist(data));
+      switch (pageName) {
+        case "TodoList":
+          dispatch(addTodolist(data));
+          break;
+        case "ProcessPending":
+          dispatch(addProcessPendingList(data));
+          break;
+      }
     }
+
     if (option === "edit") {
-      await dispatch(editTodolist(data));
+      switch (pageName) {
+        case "TodoList":
+          dispatch(editTodolist(data));
+          break;
+        case "ProcessPending":
+          dispatch(editProcessPendingList(data));
+          break;
+      }
     }
 
     onChangeStatus(false);
-    dispatch(getTodolist());
+
+    switch (pageName) {
+      case "TodoList":
+        dispatch(getTodolist());
+        break;
+      case "ProcessPending":
+        dispatch(getProcessPendingList());
+        break;
+    }
   });
   let ErrorList = Object.keys(errors);
   return (
     <Dialog
-      // style={{ width: "100%" }}
       draggable
       resizable
       open={isOpen}
       header={
-        <Bar>
+        <Bar className={styles["DialogHeader"]}>
           <Title level="H3">
             <strong>{dialogTitle}</strong>
           </Title>
@@ -211,7 +238,12 @@ export const DialogComponent: React.FC<PropsType> = ({
               //           field.onChange(event.detail.selectedOption.dataset.id);
               //         }}
               //         children={item.options.map((element, idx) => (
-              //           <Option key={idx} data-id={element.value} {...field}>
+              //           <Option
+              //             key={idx}
+              //             data-id={element.value}
+              //             {...field}
+              //             value={element.value}
+              //           >
               //             {element.label}
               //           </Option>
               //         ))}

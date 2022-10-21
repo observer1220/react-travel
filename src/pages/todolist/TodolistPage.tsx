@@ -11,12 +11,11 @@ import styles from "./TodolistPage.module.css";
 import { useSelector, useAppDispatch } from "../../redux/hooks";
 import { delTodolist, getTodolist } from "../../redux/todolist/slice";
 import { Container } from "../../components/styles/main";
-import { DialogComponent } from "../../components/diglog";
 import { Pagination } from "../../components/Pagination";
 import {
-  DeleteMessageBox,
+  DialogComponent,
   ExportButon,
-  SideNavigationComponent,
+  MessageBoxComponent,
 } from "../../components";
 import { AnalyticalTableHooks } from "@ui5/webcomponents-react";
 
@@ -45,7 +44,7 @@ export const TodolistPage: React.FC = () => {
     open: false,
   });
 
-  // 對話框的種類
+  // 對話框FORM表單內容
   const [fieldName] = useState([
     {
       label: "優先順序",
@@ -136,7 +135,8 @@ export const TodolistPage: React.FC = () => {
         onChangeStatus={setDialogStatus}
         formData={formData}
         fieldName={fieldName}
-      ></DialogComponent>
+        pageName="TodoList"
+      />
     ),
     [dialogStatus]
   );
@@ -155,9 +155,6 @@ export const TodolistPage: React.FC = () => {
       accessor: "category",
       name: "category",
       width: 100,
-      // disableFilters: false,
-      // disableGroupBy: true,
-      // disableSortBy: false,
     },
     {
       id: "EstEndDate",
@@ -240,7 +237,6 @@ export const TodolistPage: React.FC = () => {
   return (
     <MainLayout>
       <div style={{ display: "flex", justifyContent: "center" }}>
-        {/* <SideNavigationComponent /> */}
         <Container>
           <Divider orientation="left">
             <Title level="H2" style={{ color: "white" }}>
@@ -293,14 +289,12 @@ export const TodolistPage: React.FC = () => {
             rowHeight={40}
             // 無限滾輪
             // infiniteScroll={true}
-            // 複選功能
             tableHooks={[AnalyticalTableHooks.useIndeterminateRowSelection()]}
             reactTableOptions={{ selectSubRows: true }}
             selectionMode="MultiSelect"
             onRowSelect={async (event) => {
               let PatchList: any = [];
               if (event!.detail.selectedFlatRows.length > 0) {
-                // console.log(event!.detail.selectedFlatRows.length);
                 event?.detail.selectedFlatRows.forEach((element) => {
                   PatchList.push(element.original.id);
                   setPatchDelete({
@@ -329,10 +323,11 @@ export const TodolistPage: React.FC = () => {
             onPageChange={(page: number) => setCurrentPage(page)}
           />
           {/* MessageBox Component */}
-          <DeleteMessageBox
+          <MessageBoxComponent
             isOpen={messageStatus}
             onChangeStatus={setMessageStatus}
             data={formData}
+            pageName="TodoList"
           />
         </Container>
       </div>

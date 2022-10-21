@@ -1,1 +1,1 @@
-export * from "./DeleteMessageBox";
+export * from "./MessageBox";

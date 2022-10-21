@@ -1,17 +1,23 @@
 import { useAppDispatch } from "../../redux/hooks";
 import { Button, MessageBox } from "@ui5/webcomponents-react";
 import { delTodolist, getTodolist } from "../../redux/todolist/slice";
+import {
+  delProcessPendingList,
+  getProcessPendingList,
+} from "../../redux/processPending/slice";
 
 interface PropsType {
   isOpen: boolean;
   onChangeStatus: React.Dispatch<React.SetStateAction<boolean>>;
   data: any;
+  pageName: string;
 }
 
-export const DeleteMessageBox: React.FC<PropsType> = ({
+export const MessageBoxComponent: React.FC<PropsType> = ({
   isOpen,
   onChangeStatus,
   data,
+  pageName,
 }) => {
   const dispatch = useAppDispatch();
 
@@ -26,9 +32,17 @@ export const DeleteMessageBox: React.FC<PropsType> = ({
       actions={[
         <Button
           key={1}
-          onClick={() => {
-            dispatch(delTodolist(data.id));
-            dispatch(getTodolist());
+          onClick={async () => {
+            switch (pageName) {
+              case "TodoList":
+                dispatch(delTodolist(data.id));
+                dispatch(getTodolist());
+                break;
+              case "ProcessPending":
+                dispatch(delProcessPendingList(data.id));
+                dispatch(getProcessPendingList());
+                break;
+            }
           }}
         >
           確認
