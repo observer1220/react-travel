@@ -1,11 +1,6 @@
-import { useForm } from "react-hook-form";
 import "./ProcessPending.module.css";
 import {
-  Form,
-  Input,
   Button,
-  FormItem,
-  DatePicker,
   Bar,
   Title,
   AnalyticalTable,
@@ -15,8 +10,6 @@ import {
 import { useAppDispatch, useSelector } from "../../redux/hooks";
 import { useEffect, useMemo, useState } from "react";
 import { getProcessPendingList } from "../../redux/processPending/slice";
-import jwt_decode, { JwtPayload as DefaultJwtPayload } from "jwt-decode";
-import ExcelJs from "exceljs";
 import {
   DialogComponent,
   MessageBoxComponent,
@@ -41,11 +34,6 @@ interface IFormInput {
   completedQTY: any;
 }
 
-// 繼承並新增username字段
-interface JwtPayload extends DefaultJwtPayload {
-  username: string;
-}
-
 export const ProcessPendingPage: React.FC = () => {
   const jwt = useSelector((state) => state.user.token);
   const dataSource = useSelector((state) => state.processPendingList.data);
@@ -59,13 +47,21 @@ export const ProcessPendingPage: React.FC = () => {
     open: false,
   });
 
-  const [formData, setFormData] = useState<any>({
-    id: null,
-    todos: "",
-    remarks: "",
-    category: "",
-    EstEndDate: "",
-    username: "",
+  const [formData, setFormData] = useState<IFormInput>({
+    purchaseOrderNo: "",
+    purchaseOrderLine: "",
+    orderType: "",
+    orderNo: "",
+    StandardTextCode: "",
+    ProcessCode: "",
+    ManufacturerCode: "",
+    ProductName: "",
+    ESTEndDate: "",
+    ESTStartDate: "",
+    ESTDeliveryDate: "",
+    pickingStatus: "",
+    inputQTY: "",
+    completedQTY: "",
   });
 
   // 設定分頁
@@ -77,7 +73,7 @@ export const ProcessPendingPage: React.FC = () => {
   }, [currentPage, dataSource]);
 
   // 對話框欄位設定
-  const fieldName = useState<IField[]>([
+  const [fieldName] = useState<IField[]>([
     {
       label: "採購單號",
       placeholder: "請輸入採購單號...",
@@ -178,11 +174,11 @@ export const ProcessPendingPage: React.FC = () => {
     },
   ]);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<IFormInput>();
+  // const {
+  //   register,
+  //   handleSubmit,
+  //   formState: { errors },
+  // } = useForm<IFormInput>();
 
   const sourceLabel = [
     { id: "id", Header: "NO", accessor: "id", name: "id", width: 50 },
@@ -373,66 +369,10 @@ export const ProcessPendingPage: React.FC = () => {
         </Title>
       </Bar>
       {/* 搜尋表單 */}
-      <MultiSearchComponent fieldName={fieldName} />
-      {/* <Form
-        columnsXL={3}
-        columnsM={2}
-        columnsS={1}
-        style={{ background: "#f8fcfc" }}
-      >
-        <FormItem label="工單單別">
-          <Input {...register("orderType")} />
-        </FormItem>
-        <FormItem label="工單單號">
-          <Input {...register("orderNo")} />
-        </FormItem>
-        <FormItem label="標準內文碼">
-          <Input {...register("StandardTextCode")} />
-        </FormItem>
-        <FormItem label="製程代號">
-          <Input {...register("ProcessCode")} />
-        </FormItem>
-        <FormItem label="廠商代號">
-          <Input {...register("ManufacturerCode")} />
-        </FormItem>
-        <FormItem label="品名">
-          <Input {...register("ProductName")} />
-        </FormItem>
-        <FormItem label="預計完成日">
-          <DatePicker
-            {...register("ESTEndDate")}
-            onChange={function noRefCheck() {}}
-            onInput={function noRefCheck() {}}
-            primaryCalendarType="Gregorian"
-          />
-        </FormItem>
-        <FormItem label="預計開工日">
-          <DatePicker
-            {...register("ESTStartDate")}
-            onChange={function noRefCheck() {}}
-            onInput={function noRefCheck() {}}
-            primaryCalendarType="Gregorian"
-          />
-        </FormItem>
-        <FormItem label="預交日期">
-          <DatePicker
-            {...register("ESTDeliveryDate")}
-            onChange={function noRefCheck() {}}
-            onInput={function noRefCheck() {}}
-            primaryCalendarType="Gregorian"
-          />
-        </FormItem>
-      </Form> */}
+      <MultiSearchComponent data={fieldName} />
       <Bar
         endContent={
           <>
-            <Button
-              style={{ margin: "0 5px" }}
-              icon="search"
-              design="Emphasized"
-            >
-              查詢
-            </Button>
             <Button style={{ margin: "0 5px" }} onClick={() => {}}>
               匯出至Excel
             </Button>

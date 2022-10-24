@@ -14,6 +14,7 @@ import {
   Select,
   Option,
   ObjectStatus,
+  Label,
 } from "@ui5/webcomponents-react";
 import {
   addTodolist,
@@ -35,22 +36,12 @@ interface JwtPayload extends DefaultJwtPayload {
   username: string;
 }
 
-interface FormType {
-  id: any;
-  todos: any;
-  remarks: any;
-  category: any;
-  EstEndDate: any;
-  trustee: any;
-  username: string;
-}
-
 interface PropsType {
   dialogTitle: string;
   option: string;
   isOpen: boolean;
   onChangeStatus: React.Dispatch<React.SetStateAction<boolean>>;
-  formData: FormType;
+  formData: any;
   fieldName: any;
   pageName: string;
 }
@@ -188,12 +179,12 @@ export const DialogComponent: React.FC<PropsType> = ({
         {fieldName.map((item, idx) => (
           <FormItem
             label={
-              <div>
+              <Label>
                 {item.required === true ? (
                   <span style={{ color: "red" }}>*</span>
                 ) : null}
                 {item.label}
-              </div>
+              </Label>
             }
             key={idx}
           >
