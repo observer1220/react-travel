@@ -186,7 +186,7 @@ export const DialogComponent: React.FC<PropsType> = ({
                 {item.label}
               </Label>
             }
-            key={idx}
+            key={item.name}
           >
             {/* 一般輸入框 */}
             {item.type === "input" && (

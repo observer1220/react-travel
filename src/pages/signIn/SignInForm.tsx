@@ -3,19 +3,20 @@ import { Button, Checkbox, Form, Input } from "antd";
 import { signIn } from "../../redux/user/slice";
 import { useSelector, useAppDispatch } from "../../redux/hooks";
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 
 export const SignInForm: React.FC = () => {
   const loading = useSelector((state) => state.user.loading);
   const jwt = useSelector((state) => state.user.token);
   const error = useSelector((state) => state.user.error);
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   useEffect(() => {
     // 監控jwt，該值不為null及undefined時，自動跳轉至首頁
     if (jwt !== null && jwt !== undefined) {
-      navigate("/");
+      // navigate("/");
+      window.location.href = "/";
     }
   }, [jwt]);
 

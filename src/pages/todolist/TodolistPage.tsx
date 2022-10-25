@@ -252,6 +252,7 @@ export const TodolistPage: React.FC = () => {
             </Title>
           </Divider>
           <Button
+            id="add"
             design="Positive"
             icon="add"
             onClick={() => {
