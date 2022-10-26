@@ -3,35 +3,18 @@ import { Button, Checkbox, Form, Input } from "antd";
 import { signIn } from "../../redux/user/slice";
 import { useSelector, useAppDispatch } from "../../redux/hooks";
 import { useEffect } from "react";
-// import { useNavigate } from "react-router-dom";
 
 export const SignInForm: React.FC = () => {
+  const dispatch = useAppDispatch();
   const loading = useSelector((state) => state.user.loading);
   const jwt = useSelector((state) => state.user.token);
-  const error = useSelector((state) => state.user.error);
-  const dispatch = useAppDispatch();
-  // const navigate = useNavigate();
 
   useEffect(() => {
     // 監控jwt，該值不為null及undefined時，自動跳轉至首頁
     if (jwt !== null && jwt !== undefined) {
-      // navigate("/");
       window.location.href = "/";
     }
   }, [jwt]);
-
-  const onFinish = async (values: any) => {
-    dispatch(
-      signIn({
-        email: values.username,
-        password: values.password,
-      })
-    );
-  };
-
-  const onFinishFailed = (errorInfo: any) => {
-    console.log("Failed:", errorInfo);
-  };
 
   return (
     <Form
@@ -39,8 +22,17 @@ export const SignInForm: React.FC = () => {
       labelCol={{ span: 8 }}
       wrapperCol={{ span: 16 }}
       initialValues={{ remember: true }}
-      onFinish={onFinish}
-      onFinishFailed={onFinishFailed}
+      onFinish={(values) => {
+        dispatch(
+          signIn({
+            email: values.username,
+            password: values.password,
+          })
+        );
+      }}
+      onFinishFailed={(errorInfo) => {
+        console.log("Failed:", errorInfo);
+      }}
       autoComplete="off"
       className={styles["register-form"]}
     >
@@ -49,7 +41,7 @@ export const SignInForm: React.FC = () => {
         name="username"
         rules={[{ required: true, message: "Please input your username!" }]}
       >
-        <Input />
+        <Input placeholder="username" value="username" />
       </Form.Item>
 
       <Form.Item
@@ -57,7 +49,7 @@ export const SignInForm: React.FC = () => {
         name="password"
         rules={[{ required: true, message: "Please input your password!" }]}
       >
-        <Input.Password />
+        <Input.Password placeholder="password" />
       </Form.Item>
 
       <Form.Item
