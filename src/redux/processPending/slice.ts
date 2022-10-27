@@ -1,10 +1,11 @@
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import { IProcessPending } from "../../interface/interface";
 
 interface ProcessPendingState {
   loading: boolean;
   error: string | null;
-  data: any[];
+  data: IProcessPending[];
 }
 
 const initialState: ProcessPendingState = {
@@ -25,9 +26,22 @@ export const getProcessPendingList = createAsyncThunk(
 // 新增待辦製程
 export const addProcessPendingList = createAsyncThunk(
   "processPending/addProcessPendingList",
-  async (formData: object, thunkAPI) => {
+  async (formData: IProcessPending, thunkAPI) => {
     const { data } = await axios.post("http://localhost:3002/comments", {
-      ...formData,
+      purchaseOrderNo: formData.purchaseOrderNo,
+      purchaseOrderLine: formData.purchaseOrderLine,
+      orderType: formData.orderType,
+      orderNo: formData.orderNo,
+      StandardTextCode: formData.StandardTextCode,
+      ProcessCode: formData.ProcessCode,
+      ManufacturerCode: formData.ManufacturerCode,
+      ProductName: formData.ProductName,
+      ESTEndDate: formData.ESTEndDate,
+      ESTStartDate: formData.ESTStartDate,
+      ESTDeliveryDate: formData.ESTDeliveryDate,
+      pickingStatus: formData.pickingStatus,
+      inputQTY: formData.inputQTY,
+      completedQTY: formData.completedQTY,
     });
     console.log(data);
     return data;
@@ -37,16 +51,24 @@ export const addProcessPendingList = createAsyncThunk(
 // 編輯待辦製程
 export const editProcessPendingList = createAsyncThunk(
   "processPending/editProcessPendingList",
-  async (
-    formData: { todos: string; remarks: string; username: string; id: number },
-    thunkAPI
-  ) => {
+  async (formData: IProcessPending, thunkAPI) => {
     const { data } = await axios.put(
       `http://localhost:3002/comments/${formData.id}`,
       {
-        todos: formData.todos,
-        remarks: formData.remarks,
-        username: formData.username,
+        purchaseOrderNo: formData.purchaseOrderNo,
+        purchaseOrderLine: formData.purchaseOrderLine,
+        orderType: formData.orderType,
+        orderNo: formData.orderNo,
+        StandardTextCode: formData.StandardTextCode,
+        ProcessCode: formData.ProcessCode,
+        ManufacturerCode: formData.ManufacturerCode,
+        ProductName: formData.ProductName,
+        ESTEndDate: formData.ESTEndDate,
+        ESTStartDate: formData.ESTStartDate,
+        ESTDeliveryDate: formData.ESTDeliveryDate,
+        pickingStatus: formData.pickingStatus,
+        inputQTY: formData.inputQTY,
+        completedQTY: formData.completedQTY,
       }
     );
     // console.log(data);

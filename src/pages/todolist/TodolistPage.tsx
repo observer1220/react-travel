@@ -3,6 +3,7 @@ import { Divider } from "antd";
 import {
   Button,
   AnalyticalTable,
+  AnalyticalTableHooks,
   Title,
   FlexBox,
 } from "@ui5/webcomponents-react";
@@ -16,8 +17,7 @@ import {
   ExportButon,
   MessageBoxComponent,
 } from "../../components";
-import { AnalyticalTableHooks } from "@ui5/webcomponents-react";
-import { IField } from "../../interface/interface";
+import { IField, ITodoList } from "../../interface/interface";
 import { ZodiacLayout } from "../../layouts/zodiacLayout";
 
 export const TodolistPage: React.FC = () => {
@@ -28,14 +28,14 @@ export const TodolistPage: React.FC = () => {
   const [option, setOption] = useState("");
   const [dialogStatus, setDialogStatus] = useState(false);
   const [messageStatus, setMessageStatus] = useState(false);
-  const [formData, setFormData] = useState({
-    id: null,
+  const [formData, setFormData] = useState<ITodoList>({
+    id: 0,
     todos: "",
     remarks: "",
     category: "",
     EstEndDate: "",
     trustee: [],
-    phone: "",
+    phone: 0,
     enabled: true,
     username: "",
   });
@@ -245,7 +245,7 @@ export const TodolistPage: React.FC = () => {
       <div
         style={{ display: "flex", justifyContent: "center", marginTop: "50px" }}
       >
-        <Container>
+        <Container style={{ background: "#68BE8D" }}>
           <Divider orientation="left">
             <Title level="H2" style={{ color: "white" }}>
               本週待辦事項
@@ -260,13 +260,13 @@ export const TodolistPage: React.FC = () => {
               setDialogStatus(true);
               setOption("add");
               setFormData({
-                id: null,
+                id: 0,
                 todos: "",
                 remarks: "",
                 category: "",
                 EstEndDate: "",
                 trustee: [],
-                phone: "",
+                phone: 0,
                 enabled: true,
                 username: formData.username,
               });

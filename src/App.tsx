@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import { useEffect } from "react";
 import styles from "./App.module.css";
-import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import {
   HomePage,
   SignInPage,
@@ -48,10 +48,7 @@ function App() {
   const jwt = useSelector((state) => state.user.token) as string;
   const drawerState = useSelector((state) => state.shoppingCart.drawer);
   const shoppingCartItems = useSelector((state) => state.shoppingCart.items);
-  // console.log(shoppingCartItems);
-
   const dispatch = useAppDispatch();
-  // const navigate = useNavigate();
 
   const onClose = () => {
     dispatch(changeDrawerState(false));
@@ -66,7 +63,6 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <div className={styles.App}>
-        {/* react-router-dom V6: 不支援 component={HomePage} */}
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<HomePage />} />
@@ -156,7 +152,6 @@ function App() {
                     return;
                   }
                   dispatch(checkout(jwt));
-                  // navigate("/placeOrder");
                 }}
                 onShoppingCartClear={() => {
                   dispatch(

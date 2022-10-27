@@ -1,10 +1,11 @@
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import { ITodoList } from "../../interface/interface";
 
 interface TodolistState {
   loading: boolean;
   error: string | null;
-  data: any[];
+  data: ITodoList[];
   dialog: boolean;
 }
 
@@ -27,19 +28,7 @@ export const getTodolist = createAsyncThunk(
 // 新增待辦事項
 export const addTodolist = createAsyncThunk(
   "todolist/addTodolist",
-  async (
-    formData: {
-      todos: string;
-      remarks: string;
-      category: string;
-      EstEndDate: string;
-      trustee: any;
-      phone: number;
-      enabled: boolean;
-      username: string;
-    },
-    thunkAPI
-  ) => {
+  async (formData: ITodoList, thunkAPI) => {
     const { data } = await axios.post("http://localhost:3002/posts", {
       todos: formData.todos,
       remarks: formData.remarks,
@@ -58,20 +47,7 @@ export const addTodolist = createAsyncThunk(
 // 編輯待辦事項
 export const editTodolist = createAsyncThunk(
   "todolist/editTodolist",
-  async (
-    formData: {
-      id: number;
-      todos: string;
-      remarks: string;
-      category: string;
-      EstEndDate: string;
-      trustee: any;
-      phone: number;
-      enabled: boolean;
-      username: string;
-    },
-    thunkAPI
-  ) => {
+  async (formData: ITodoList, thunkAPI) => {
     const { data } = await axios.put(
       `http://localhost:3002/posts/${formData.id}`,
       {

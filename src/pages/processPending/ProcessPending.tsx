@@ -15,24 +15,7 @@ import {
   MessageBoxComponent,
   MultiSearchComponent,
 } from "../../components";
-import { IField } from "../../interface/interface";
-
-interface IFormInput {
-  purchaseOrderNo: any;
-  purchaseOrderLine: any;
-  orderType: any;
-  orderNo: any;
-  StandardTextCode: any;
-  ProcessCode: any;
-  ManufacturerCode: any;
-  ProductName: any;
-  ESTEndDate: any;
-  ESTStartDate: any;
-  ESTDeliveryDate: any;
-  pickingStatus: any;
-  inputQTY: any;
-  completedQTY: any;
-}
+import { IField, IProcessPending } from "../../interface/interface";
 
 export const ProcessPendingPage: React.FC = () => {
   const jwt = useSelector((state) => state.user.token);
@@ -47,7 +30,8 @@ export const ProcessPendingPage: React.FC = () => {
     open: false,
   });
 
-  const [formData, setFormData] = useState<IFormInput>({
+  const [formData, setFormData] = useState<IProcessPending>({
+    id: 0,
     purchaseOrderNo: "",
     purchaseOrderLine: "",
     orderType: "",
@@ -59,9 +43,9 @@ export const ProcessPendingPage: React.FC = () => {
     ESTEndDate: "",
     ESTStartDate: "",
     ESTDeliveryDate: "",
-    pickingStatus: "",
-    inputQTY: "",
-    completedQTY: "",
+    pickingStatus: false,
+    inputQTY: 0,
+    completedQTY: 0,
   });
 
   // 設定分頁
@@ -296,7 +280,7 @@ export const ProcessPendingPage: React.FC = () => {
                 onClick={() => {
                   setTitle("複製項目");
                   setDialogStatus(true);
-                  setOption("copy");
+                  setOption("add");
                   setFormData(row.original);
                 }}
               ></Button>
@@ -350,7 +334,7 @@ export const ProcessPendingPage: React.FC = () => {
         pageName="ProcessPending"
       />
     ),
-    [dialogStatus, formData]
+    [dialogStatus]
   );
 
   return (
@@ -384,6 +368,7 @@ export const ProcessPendingPage: React.FC = () => {
                 setDialogStatus(true);
                 setOption("add");
                 setFormData({
+                  id: 0,
                   purchaseOrderNo: "",
                   purchaseOrderLine: "",
                   ManufacturerCode: "",
@@ -394,10 +379,10 @@ export const ProcessPendingPage: React.FC = () => {
                   ProcessCode: "",
                   ESTStartDate: "",
                   ESTEndDate: "",
-                  inputQTY: "",
-                  completedQTY: "",
+                  inputQTY: 0,
+                  completedQTY: 0,
                   ESTDeliveryDate: "",
-                  pickingStatus: "",
+                  pickingStatus: false,
                 });
               }}
             />

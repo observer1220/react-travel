@@ -12,19 +12,30 @@ function Condition(jwt: any) {
 }
 
 describe("測試登入功能", () => {
-  test("帳號測試", () => {
+  const originalError = console.error;
+  beforeAll(() => {
+    console.error = (...args) => {
+      if (/Warning.*not wrapped in act/.test(args[0])) {
+        return;
+      }
+      originalError.call(console, ...args);
+    };
+  });
+
+  test("帳號測試", async () => {
     render(
       <Provider store={rootStore.store}>
         <SignInForm />
       </Provider>
     );
-    const usernameInputEl: any = screen.getByPlaceholderText(/username/i);
+    const usernameInputEl: any = await screen.findByPlaceholderText("username");
     const usernameValue = "duck@gmail.com";
     fireEvent.change(usernameInputEl, { target: { value: usernameValue } });
+
     expect(usernameInputEl.value).toBe(usernameValue);
   });
 
-  test("密碼測試", () => {
+  test("密碼測試", async () => {
     render(
       <Provider store={rootStore.store}>
         <SignInForm />
@@ -33,25 +44,28 @@ describe("測試登入功能", () => {
     const passwordInputEl: any = screen.getByPlaceholderText(/password/i);
     const passwordValue = "test1234";
     fireEvent.change(passwordInputEl, { target: { value: passwordValue } });
+
     expect(passwordInputEl.value).toBe(passwordValue);
   });
 
-  test("按鈕是否出現?", () => {
+  test("按鈕是否出現?", async () => {
     render(
       <Provider store={rootStore.store}>
         <SignInForm />
       </Provider>
     );
     const buttonEl: any = screen.getByRole("button");
+
     expect(buttonEl).toBeInTheDocument();
   });
 
-  test("測試IF、ELSE", () => {
+  test("測試IF、ELSE", async () => {
     render(
       <Provider store={rootStore.store}>
         <SignInForm />
       </Provider>
     );
+
     expect(Condition("test1234567890")).toBe("/");
   });
 
@@ -65,5 +79,9 @@ describe("測試登入功能", () => {
       header: { "content-type": "application/json" },
       body: { email: "duck@gmail.com", password: "test1234" },
     });
+  });
+
+  afterAll(() => {
+    console.error = originalError;
   });
 });
