@@ -40,7 +40,7 @@ export interface ITodoList {
   category: string;
   EstEndDate: string;
   trustee: any;
-  phone: number;
+  phone: string;
   enabled: boolean;
   username: string;
 }

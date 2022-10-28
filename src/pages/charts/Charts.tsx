@@ -1,61 +1,44 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { MainLayout } from "../../layouts/mainLayout";
-import {
-  Button,
-  FlexBox,
-  Link,
-  Menu,
-  MenuItem,
-  Tree,
-  TreeItem,
-} from "@ui5/webcomponents-react";
-import styles from "./Charts.module.css";
-import { useSelector, useAppDispatch } from "../../redux/hooks";
-
 import { Container } from "../../components/styles/main";
-// import { ColumnChart } from "@ui5/webcomponents-react-charts";
+import axios from "axios";
+import { Button } from "@ui5/webcomponents-react";
 
 export const ChartsPage: React.FC = () => {
-  const dispatch = useAppDispatch();
-  const jwt = useSelector((state) => state.user.token);
-
+  const [data, setData] = useState<any>([]);
+  const inputRef: any = useRef(null);
   useEffect(() => {
-    if (jwt) {
-    }
+    axios
+      .get(
+        "https://newsapi.org/v2/top-headlines?country=tw&apiKey=abf3b20ed73441569a5f75878dfd1eda"
+      )
+      .then((res) => {
+        // console.log(res);
+        setData(res.data.articles);
+      });
   }, []);
 
   return (
     <MainLayout>
       <Container>
-        <>
-          <Button
-            // ref={{
-            //   current: "[Circular]",
-            // }}
-            onClick={(e) => {
-              console.log(e);
-            }}
-          >
-            菜單
-          </Button>
-          <Menu
-            // ref={
-            //   {
-            //     // current: {['Circular']},
-            //   }
-            // }
-            onItemClick={(event) => {
-              console.log(event);
-            }}
-          >
-            <MenuItem icon="add-document" text="New File" />
-            <MenuItem disabled icon="add-folder" text="New Folder" />
-            <MenuItem icon="open-folder" startsSection text="Open" />
-            <MenuItem text="Close" />
-            <MenuItem icon="action-settings" startsSection text="Preferences" />
-            <MenuItem icon="journey-arrive" text="Exit" />
-          </Menu>
-        </>
+        <Button
+          onClick={() => {
+            console.log(inputRef.current.value);
+          }}
+        >
+          觸發
+        </Button>
+        <input type="text" ref={inputRef} />
+        <ul>
+          {data.map((item, idx) => (
+            <li key={idx}>
+              {idx + 1}
+              <a href={item.url} target="_blank" rel="noreferrer">
+                {item.title}
+              </a>
+            </li>
+          ))}
+        </ul>
       </Container>
     </MainLayout>
   );

@@ -35,7 +35,7 @@ export const TodolistPage: React.FC = () => {
     category: "",
     EstEndDate: "",
     trustee: [],
-    phone: 0,
+    phone: "",
     enabled: true,
     username: "",
   });
@@ -266,7 +266,7 @@ export const TodolistPage: React.FC = () => {
                 category: "",
                 EstEndDate: "",
                 trustee: [],
-                phone: 0,
+                phone: "",
                 enabled: true,
                 username: formData.username,
               });

@@ -17,3 +17,4 @@ export * from "./MessageBox";
 export * from "./sideNavigation";
 export * from "./dialog";
 export * from "./MultiSearch";
+export * from "./scoring";
